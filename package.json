@@ -7,8 +7,13 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "lint": "eslint . --ext .vue,.js --fix",
-    "format": "prettier --write src/"
+    "lint": "eslint . --ext .vue,.js,.mjs --max-warnings 0",
+    "lint:fix": "eslint . --ext .vue,.js,.mjs --fix",
+    "format": "prettier --write src scripts index.html package.json vite.config.js .github/workflows/deploy.yml",
+    "format:check": "prettier --check src scripts index.html package.json vite.config.js .github/workflows/deploy.yml",
+    "verify": "node scripts/verify.mjs",
+    "check": "npm run lint && npm run format:check && npm run verify",
+    "measure:build": "node scripts/measureBuild.mjs"
   },
   "dependencies": {
     "axios": "1.7.9",

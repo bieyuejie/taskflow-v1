@@ -1,8 +1,7 @@
-name: Deploy TaskFlow to GitHub Pages
+name: Deploy TaskFlow V1 to GitHub Pages
 
 on:
-  push:
-    branches: [master]
+  # 第六阶段验收独立仓库后再开启自动发布。
   workflow_dispatch:
 
 permissions:
@@ -16,6 +15,7 @@ concurrency:
 
 jobs:
   deploy:
+    if: github.repository == 'bieyuejie/taskflow-v1' && github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     environment:
       name: github-pages
@@ -31,7 +31,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Check code
-        run: npx eslint . --ext .vue,.js --max-warnings 0
+        run: npm run check
       - name: Build
         run: npm run build
       - name: Configure Pages

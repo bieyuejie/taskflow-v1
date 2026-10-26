@@ -1,0 +1,79 @@
+{
+  "label": "stage1",
+  "measuredAt": "2026-10-26T10:32:33.254Z",
+  "buildCommand": "npm run build",
+  "units": "bytes; kB = bytes / 1000; gzip is the sum of individually compressed JS files",
+  "environment": {
+    "platform": "win32",
+    "arch": "x64",
+    "node": "v24.19.0",
+    "npm": "npm/11.17.0 node/v24.19.0 win32 x64 workspaces/false"
+  },
+  "dependencies": {
+    "@vitejs/plugin-vue": "5.1.4",
+    "axios": "1.7.9",
+    "axios-mock-adapter": "1.22.0",
+    "echarts": "5.5.1",
+    "element-plus": "2.7.8",
+    "eslint": "8.57.1",
+    "eslint-config-prettier": "10.1.8",
+    "eslint-plugin-prettier": "5.5.6",
+    "eslint-plugin-vue": "9.33.0",
+    "pinia": "2.1.7",
+    "prettier": "3.9.8",
+    "vite": "5.4.11",
+    "vue": "3.4.38",
+    "vue-router": "4.4.3",
+    "vuedraggable": "4.1.0"
+  },
+  "inputSha256": {
+    "index.html": "40fa9b9238c0b2841ba246d74cec6eb20804de8e62b508fa5b19d8849678671c",
+    "package-lock.json": "d54624ebf5085acbcc44c5f1e6be966d015cef145a1111988237086f5fa66d7f",
+    "package.json": "b07d1b3f980ad22c2b6f93efbc13a2b79c81ef1d0304b8d2f2ee42cf37a53012",
+    "src/App.vue": "fa6df19af303383583c2ea44afe9ae84ab357c3f287aef77ada42424b3f9cf1d",
+    "src/api/request.js": "363a0d3ca02d312574a2399c79deaaa14f5540b7ec264335b000c780749c4db8",
+    "src/api/task.js": "44bf266da67ee6353eb60e1873d452cfd19dd9bb1d695d5bcb067dff1ef25f6b",
+    "src/api/user.js": "59e24ae65dde83777a2533414fddbc0b6dbaaa17a3d3670889883229e1e4e4a2",
+    "src/assets/style.css": "8e461c7e5f94450b689762daac95bc1369e283abed0499e52bea169e23a61865",
+    "src/components/TaskCard.vue": "a6b43e15a9ae5a3c3a6d384d1bfd79164b61278d3484622da0ee1419cc0edcfa",
+    "src/components/TaskDialog.vue": "04786dde2a41a67de58837eb87b901c69894670e048e55ec2185e2e014c72a84",
+    "src/main.js": "0a264cfb32574c1820584c77325c36ed9e8fe3cd5118ea2478a9a6cafda13b35",
+    "src/mock/index.js": "b7c53f8b5bd6dc248d913133329e3de5e5b733d09f54181d3613b3d3d85bb86a",
+    "src/router/index.js": "8ecfc659161720d3b58e635d24630c1e9d3c7de2997fd0ac4dd1c834a964309a",
+    "src/stores/task.js": "f2e3f838933660b34cf6e2e65c1c51feea3c0173b7af45f462f485b8bc606448",
+    "src/stores/user.js": "6ea026691dc10b139d239275d688a773f438bd26b384177826cf15f165842c6b",
+    "src/utils/debounce.js": "86d6f9d0765c4ebd09facbb6b37cc5966c44baa2298078ad9327633e5b23f590",
+    "src/utils/statsCharts.js": "aeedacd3d5fac38dc32614ab7120433955f97d279aa8b9d34ab8b632d54d8900",
+    "src/views/Kanban.vue": "298f4ddd5602f13b0d69155415cfc8644b6df343024c14d028eee1d53f35f7f7",
+    "src/views/Login.vue": "d5c68e289302ed9303d69b8e2b9f9b37c5b608e7c11994bec073b41f3150366b",
+    "src/views/Stats.vue": "045e93f1d63c278ad2b2af0e4c1af4588048407af29924983d9d96decfa31c3f",
+    "src/views/TaskList.vue": "bbb59c854c6e042eb0af9de83d4a9a7ea06390e31d1de77efedc4e2b886b0222",
+    "vite.config.js": "15d3ccde0ca7002dfe8509a2a6a16396c4d9bc3b040cbbf72d447fbf6d041b7a"
+  },
+  "dataConditions": "Mock seeds unchanged; no browser or persistent data affects the build",
+  "javascript": {
+    "chunks": 1,
+    "totalBytes": 2131698,
+    "totalGzipBytes": 711768,
+    "largestChunk": {
+      "file": "assets/index-sODgYF-e.js",
+      "bytes": 2131698,
+      "gzipBytes": 711768,
+      "sha256": "2cd0fe9301ee4b26badcda54a14ad78460aae069091a9cfd78285375b5a0b5a5"
+    }
+  },
+  "assets": [
+    {
+      "file": "assets/index-sODgYF-e.js",
+      "bytes": 2131698,
+      "gzipBytes": 711768,
+      "sha256": "2cd0fe9301ee4b26badcda54a14ad78460aae069091a9cfd78285375b5a0b5a5"
+    },
+    {
+      "file": "assets/index-zVvYUBNF.css",
+      "bytes": 323959,
+      "gzipBytes": 44936,
+      "sha256": "9f2343fa9a944f4a7e6376e3e0967e497facdae8d10890490f5893ff346a06d6"
+    }
+  ]
+}
