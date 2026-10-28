@@ -1,7 +1,29 @@
 import MockAdapter from 'axios-mock-adapter';
 import request from '../api/request';
+import { DEMO_TOKEN } from '../utils/storage';
+import {
+  initRepository,
+  getState,
+  saveSnapshot,
+  getRepositoryStatus,
+  resetRepository,
+} from './repository';
+import { genId } from '../utils/id';
 
+initRepository();
 const mock = new MockAdapter(request);
+
+const statusReply = (result) => [
+  200,
+  { code: result.ok ? 200 : 400, data: getRepositoryStatus(), msg: result.reason || 'ok' },
+];
+mock
+  .onGet('/storage/status')
+  .reply(() => [200, { code: 200, data: getRepositoryStatus(), msg: 'ok' }]);
+mock.onPost('/storage/retry').reply(() => statusReply(initRepository()));
+mock
+  .onPost('/storage/reset')
+  .reply((config) => statusReply(resetRepository(parseBody(config)?.confirmed)));
 
 mock.onPost('/api/login').reply((config) => {
   const body = parseBody(config);
@@ -16,7 +38,7 @@ mock.onPost('/api/login').reply((config) => {
   }
   return [
     200,
-    { code: 200, data: { token: 'fake-xxx', username: body.username.trim() }, msg: 'ok' },
+    { code: 200, data: { token: DEMO_TOKEN, username: body.username.trim() }, msg: 'ok' },
   ];
 });
 
@@ -29,9 +51,11 @@ function parseBody(config) {
 }
 
 function authorize(config) {
-  if (config.headers?.Authorization !== 'fake-xxx') {
+  if (config.headers?.Authorization !== DEMO_TOKEN) {
     return [200, { code: 401, data: null, msg: '登录已失效，请重新登录' }];
   }
+  const status = getRepositoryStatus();
+  if (!status.ok) return [200, { code: 400, data: null, msg: status.reason }];
   return null;
 }
 
@@ -46,36 +70,7 @@ function validTask(task) {
   );
 }
 
-let lastId = Date.now();
-
-const tasks = [
-  {
-    id: String(++lastId),
-    title: '学习Vue3',
-    desc: '组合式API',
-    status: 'todo',
-    priority: 'high',
-    createTime: Date.now(),
-  },
-  {
-    id: String(++lastId),
-    title: '写登录页',
-    desc: '表单校验',
-    status: 'doing',
-    priority: 'medium',
-    createTime: Date.now(),
-  },
-  {
-    id: String(++lastId),
-    title: '部署项目',
-    desc: 'Vercel',
-    status: 'done',
-    priority: 'low',
-    createTime: Date.now(),
-  },
-];
-
-mock.onGet('/api/tasks').reply((config) => {
+mock.onGet('/tasks').reply((config) => {
   const unauthorized = authorize(config);
   if (unauthorized) return unauthorized;
   const { keyword = '', status = '', page = 1, pageSize = 10 } = config.params || {};
@@ -89,32 +84,44 @@ mock.onGet('/api/tasks').reply((config) => {
   ) {
     return [200, { code: 400, data: null, msg: '查询参数不合法' }];
   }
-  const list = tasks.filter(
-    (task) => task.title.includes(keyword) && (status ? task.status === status : true)
+  const all = getState().tasks.filter((t) => t.parentId === null);
+  const list = all.filter(
+    (t) => t.title.includes(keyword) && (status ? t.status === status : true)
   );
-  const total = list.length;
   const start = (page - 1) * pageSize;
-  const data = list.slice(start, start + Number(pageSize));
-  return [200, { code: 200, data: { list: data, total }, msg: 'ok' }];
+  return [
+    200,
+    {
+      code: 200,
+      data: { list: list.slice(start, start + Number(pageSize)), total: list.length },
+      msg: 'ok',
+    },
+  ];
 });
 
-mock.onPost('/api/tasks').reply((config) => {
+mock.onPost('/tasks').reply((config) => {
   const unauthorized = authorize(config);
   if (unauthorized) return unauthorized;
   const body = parseBody(config);
   if (!validTask(body)) return [200, { code: 400, data: null, msg: '任务字段不合法' }];
-  const createTime = Date.now();
-  lastId = Math.max(createTime, lastId + 1);
-  const task = {
-    id: String(lastId),
-    title: body.title.trim(),
-    desc: body.desc,
-    status: body.status,
-    priority: body.priority,
-    createTime,
-  };
-  tasks.unshift(task);
-  return [200, { code: 200, data: task, msg: '新增成功' }];
+  let newTask;
+  const result = saveSnapshot((state) => {
+    newTask = {
+      id: genId(),
+      title: body.title.trim(),
+      desc: body.desc,
+      status: body.status,
+      priority: body.priority,
+      createTime: Date.now(),
+      projectId: state.projects[0].id, // 第三阶段再接入项目选择。
+      parentId: null,
+      dueDate: null,
+    };
+    state.tasks.unshift(newTask);
+    return state;
+  });
+  if (!result.ok) return [200, { code: 400, data: null, msg: result.reason }];
+  return [200, { code: 200, data: newTask, msg: '新增成功' }];
 });
 
 mock.onPut(/^\/api\/tasks\/\d+$/).reply((config) => {
@@ -123,31 +130,47 @@ mock.onPut(/^\/api\/tasks\/\d+$/).reply((config) => {
   const id = config.url.split('/').pop();
   const body = parseBody(config);
   if (!body) return [200, { code: 400, data: null, msg: '任务字段不合法' }];
-  const index = tasks.findIndex((task) => task.id === id);
-  if (index === -1) return [200, { code: 400, data: null, msg: '任务不存在' }];
 
-  const currentTask = tasks[index];
-  if (!validTask({ ...currentTask, ...body })) {
+  const current = getState().tasks.find((t) => t.id === id);
+  if (!current) return [200, { code: 400, data: null, msg: '任务不存在' }];
+
+  if (!validTask({ ...current, ...body })) {
     return [200, { code: 400, data: null, msg: '任务字段不合法' }];
   }
-  tasks[index] = {
-    ...currentTask,
-    title: (body.title ?? currentTask.title).trim(),
-    desc: body.desc ?? currentTask.desc,
-    status: body.status ?? currentTask.status,
-    priority: body.priority ?? currentTask.priority,
-  };
-  return [200, { code: 200, data: tasks[index], msg: '编辑成功' }];
+
+  let updated;
+  const result = saveSnapshot((state) => {
+    const index = state.tasks.findIndex((t) => t.id === id);
+    updated = {
+      ...state.tasks[index],
+      title: (body.title ?? current.title).trim(),
+      desc: body.desc ?? current.desc,
+      status: body.status ?? current.status,
+      priority: body.priority ?? current.priority,
+    };
+    state.tasks[index] = updated;
+    return state;
+  });
+
+  if (!result.ok) return [200, { code: 400, data: null, msg: result.reason }];
+  return [200, { code: 200, data: updated, msg: '编辑成功' }];
 });
 
 mock.onDelete(/^\/api\/tasks\/\d+$/).reply((config) => {
   const unauthorized = authorize(config);
   if (unauthorized) return unauthorized;
   const id = config.url.split('/').pop();
-  const index = tasks.findIndex((task) => task.id === id);
-  if (index === -1) return [200, { code: 400, data: null, msg: '任务不存在' }];
 
-  tasks.splice(index, 1);
+  if (!getState().tasks.find((t) => t.id === id)) {
+    return [200, { code: 400, data: null, msg: '任务不存在' }];
+  }
+
+  const result = saveSnapshot((state) => {
+    state.tasks = state.tasks.filter((t) => t.id !== id);
+    return state;
+  });
+
+  if (!result.ok) return [200, { code: 400, data: null, msg: result.reason }];
   return [200, { code: 200, data: null, msg: '删除成功' }];
 });
 

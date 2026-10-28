@@ -3,6 +3,7 @@ import Login from '../views/Login.vue';
 import TaskList from '../views/TaskList.vue';
 import Kanban from '../views/Kanban.vue';
 import Stats from '../views/Stats.vue';
+import { authGuard } from './guard';
 
 const routes = [
   { path: '/login', name: 'Login', component: Login },
@@ -17,17 +18,6 @@ const router = createRouter({
   routes,
 });
 
-const WHITE_LIST = ['/login'];
-
-router.beforeEach((to, from, next) => {
-  const token = localStorage.getItem('taskflow_token');
-  if (WHITE_LIST.includes(to.path)) {
-    next();
-  } else if (!token) {
-    next('/login');
-  } else {
-    next();
-  }
-});
+router.beforeEach(authGuard);
 
 export default router;

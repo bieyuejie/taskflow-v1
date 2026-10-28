@@ -1,4 +1,5 @@
 <template>
+  <StorageNotice />
   <header v-if="route.path !== '/login'" class="app-header">
     <strong>TaskFlow</strong>
     <nav aria-label="主导航">
@@ -8,20 +9,25 @@
     </nav>
     <el-button @click="logout">退出登录</el-button>
   </header>
-  <router-view />
+  <router-view v-if="route.path === '/login' || storageStore.ready" :key="storageStore.revision" />
 </template>
 
 <script setup>
 import { useRoute, useRouter } from 'vue-router';
 import { useUserStore } from './stores/user';
 import { useTaskStore } from './stores/task';
+import { useStorageStore } from './stores/storage';
+import StorageNotice from './components/StorageNotice.vue';
+import { ElMessage } from 'element-plus';
 
 const route = useRoute();
 const router = useRouter();
 const userStore = useUserStore();
 const taskStore = useTaskStore();
+const storageStore = useStorageStore();
 const logout = () => {
-  userStore.logout();
+  const result = userStore.logout();
+  if (!result.ok) ElMessage.error(result.reason);
   taskStore.clearTasks();
   router.replace('/login');
 };

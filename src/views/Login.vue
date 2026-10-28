@@ -2,6 +2,13 @@
   <div class="login-container">
     <el-card class="login-card">
       <h2 class="title">TaskFlow</h2>
+      <el-alert
+        v-if="userStore.storageError"
+        :title="userStore.storageError"
+        type="error"
+        :closable="false"
+        show-icon
+      />
       <el-form ref="formRef" :model="form" :rules="rules" label-width="0">
         <el-form-item prop="username">
           <el-input v-model="form.username" placeholder="请输入账号" />

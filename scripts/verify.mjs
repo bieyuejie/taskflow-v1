@@ -3,6 +3,8 @@ import { fileURLToPath } from 'node:url';
 import axios from 'axios';
 import { createPinia, setActivePinia } from 'pinia';
 import { createServer } from 'vite';
+import './verifyData.mjs';
+import { verifyStorage } from './verifyStorage.mjs';
 
 assert.equal(Number(process.versions.node.split('.')[0]), 24, '本项目使用 Node 24.x');
 
@@ -48,8 +50,8 @@ try {
   assert.equal(login.data.username, 'stage1');
   assert.equal(typeof login.data.token, 'string');
   raw.defaults.headers.common.Authorization = login.data.token;
-  // 基线仍使用旧登录键；第二阶段切换 V1 常量时同步扩展此处及存储异常断言。
-  memory.set('taskflow_token', login.data.token);
+  // 第二阶段已切换 V1 键名；后续存储异常断言在此扩展。
+  memory.set('taskflow_v1_token', login.data.token);
   console.log('PASS: Mock 未授权、空白登录校验及演示登录');
 
   const invalidTask = { title: 'invalid', desc: '', status: 'unknown', priority: 'low' };
@@ -132,7 +134,6 @@ try {
   assert.equal(store.total, 0);
   assert.equal(store.loading, false);
   console.log('PASS: 乱序响应保护与清空后旧请求隔离');
-  console.log('阶段一基线断言通过；V1 持久化和关联异常断言将在对应阶段补齐。');
 } finally {
   if (request && originalAdapter) request.defaults.adapter = originalAdapter;
   await server?.close();
@@ -140,3 +141,6 @@ try {
   if (previousStorage) Object.defineProperty(globalThis, 'localStorage', previousStorage);
   else delete globalThis.localStorage;
 }
+
+await verifyStorage();
+console.log('第二阶段存储与恢复断言通过。');

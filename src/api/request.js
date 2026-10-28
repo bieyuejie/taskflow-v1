@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { ElMessage } from 'element-plus';
+import { storageGet, TOKEN_KEY } from '../utils/storage';
 
 const request = axios.create({
   baseURL: '/api',
@@ -12,17 +13,19 @@ async function handleUnauthorized(msg) {
     import('../router'),
     import('../stores/task'),
   ]);
-  useUserStore().logout();
+  const logoutResult = useUserStore().logout();
   useTaskStore().clearTasks();
-  ElMessage.error(msg || '未授权，请重新登录');
+  ElMessage.error(logoutResult.ok ? msg || '未授权，请重新登录' : logoutResult.reason);
   await router.replace('/login');
 }
 
 request.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('taskflow_token');
-    if (token) {
-      config.headers.Authorization = token;
+    if (config.skipAuth) return config;
+    const result = storageGet(TOKEN_KEY);
+    if (!result.ok) throw new Error(result.reason);
+    if (result.value) {
+      config.headers.Authorization = result.value;
     }
     return config;
   },
