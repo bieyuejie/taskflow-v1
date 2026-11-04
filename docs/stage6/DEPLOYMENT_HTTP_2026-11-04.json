@@ -1,0 +1,103 @@
+{
+  "checkedAt": "2026-11-04T12:06:49.9363163Z",
+  "url": "https://bieyuejie.github.io/taskflow-v1/",
+  "entry_status": 200,
+  "title": "TaskFlow 轻量任务管理看板",
+  "entry_resource_paths": [
+    "/taskflow-v1/assets/index-i63jE-ZR.js",
+    "/taskflow-v1/assets/index-B0y0pvvX.css"
+  ],
+  "resources": [
+    {
+      "file": "assets/index-B0y0pvvX.css",
+      "status": 200,
+      "content_type": "text/css; charset=utf-8",
+      "bytes": 321548,
+      "sha256": "752003bc4df60825e32f410c695cf977de807b48666ddef4d8bc48e2ca382b46",
+      "matches_stage5_asset": true,
+      "html_fallback": false,
+      "error": null
+    },
+    {
+      "file": "assets/index-CdSqMEmh.js",
+      "status": 404,
+      "error": "HttpResponseException"
+    },
+    {
+      "file": "assets/Kanban-BKi_5mZ1.js",
+      "status": 404,
+      "error": "HttpResponseException"
+    },
+    {
+      "file": "assets/Kanban-DiyJoBCl.css",
+      "status": 404,
+      "error": "HttpResponseException"
+    },
+    {
+      "file": "assets/Login-C4Lmu0-Z.css",
+      "status": 200,
+      "content_type": "text/css; charset=utf-8",
+      "bytes": 348,
+      "sha256": "d847ca6d451a4b78fabee946322d7371036a416e18533a2483774cf45f074d5c",
+      "matches_stage5_asset": true,
+      "html_fallback": false,
+      "error": null
+    },
+    {
+      "file": "assets/Login-onABLcSK.js",
+      "status": 404,
+      "error": "HttpResponseException"
+    },
+    {
+      "file": "assets/Projects-CrH8OPj3.css",
+      "status": 404,
+      "error": "HttpResponseException"
+    },
+    {
+      "file": "assets/Projects-DOVwt-s8.js",
+      "status": 404,
+      "error": "HttpResponseException"
+    },
+    {
+      "file": "assets/ProjectSelect-D44rlVS_.css",
+      "status": 200,
+      "content_type": "text/css; charset=utf-8",
+      "bytes": 61,
+      "sha256": "b2e04fa82f53ea05e1f99cfd7e4d6f973b2926e71b5793613bef6a410a64409a",
+      "matches_stage5_asset": true,
+      "html_fallback": false,
+      "error": null
+    },
+    {
+      "file": "assets/ProjectSelect-D5XcwSXL.js",
+      "status": 404,
+      "error": "HttpResponseException"
+    },
+    {
+      "file": "assets/Stats-BC7leSw7.js",
+      "status": 404,
+      "error": "HttpResponseException"
+    },
+    {
+      "file": "assets/Stats-ySd6qmh3.css",
+      "status": 404,
+      "error": "HttpResponseException"
+    },
+    {
+      "file": "assets/TaskList-9Dmi0QmD.css",
+      "status": 200,
+      "content_type": "text/css; charset=utf-8",
+      "bytes": 873,
+      "sha256": "9d017841fb2f70b1308e618ead19c60d9d5cb0cee037ea954c1fe10a01aa96d7",
+      "matches_stage5_asset": true,
+      "html_fallback": false,
+      "error": null
+    },
+    {
+      "file": "assets/TaskList-Bk9CT7c7.js",
+      "status": 404,
+      "error": "HttpResponseException"
+    }
+  ],
+  "scope": "HTTP entry and JS/CSS asset availability and byte hashes only; full online browser acceptance pending"
+}

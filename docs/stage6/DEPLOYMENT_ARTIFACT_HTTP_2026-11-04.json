@@ -1,0 +1,252 @@
+{
+  "checkedAt": "2026-11-04T12:10:31.4155585Z",
+  "url": "https://bieyuejie.github.io/taskflow-v1/",
+  "run_id": 41826205389,
+  "head_sha": "25d83ebff2699e1b99ac8612ae48073be924a118",
+  "artifact_id": 13319556080,
+  "artifact_zip_sha256": "206ae3e82259c95e03e6d7a6fccd2a06716e1b54f3f2073df2091dd30456ebd7",
+  "artifact_digest_matches": true,
+  "manifest": [
+    {
+      "file": "assets/index-B0y0pvvX.css",
+      "bytes": 321548,
+      "sha256": "752003bc4df60825e32f410c695cf977de807b48666ddef4d8bc48e2ca382b46"
+    },
+    {
+      "file": "assets/index-i63jE-ZR.js",
+      "bytes": 998102,
+      "sha256": "64d008033a48aeaadb20fa6cd4c012616b7a70d9b3a0eb514dca21e681c93bd9"
+    },
+    {
+      "file": "assets/Kanban-2SNSSZHt.js",
+      "bytes": 104459,
+      "sha256": "3064c7928b445158fe68bc0dc971e5c75b982a0850fdbd1aae6806a5d41d33c8"
+    },
+    {
+      "file": "assets/Kanban-Dw7y76Oo.css",
+      "bytes": 1015,
+      "sha256": "96b0d22571548ca493ab6a840d303745ba481fc9a77a205510d688576c3e58c2"
+    },
+    {
+      "file": "assets/Login-BddD7Flt.js",
+      "bytes": 1767,
+      "sha256": "307fd65351fbc6ca2aaf257b320d71e4f5bd517ce45fcf113f2ca7449f7f3140"
+    },
+    {
+      "file": "assets/Login-C4Lmu0-Z.css",
+      "bytes": 348,
+      "sha256": "d847ca6d451a4b78fabee946322d7371036a416e18533a2483774cf45f074d5c"
+    },
+    {
+      "file": "assets/Projects-Bd2TgYQS.css",
+      "bytes": 188,
+      "sha256": "bdd9ef113911c53319e6e46bccfee32ff70a159d9358b0d9a1f954a7ddee5a0f"
+    },
+    {
+      "file": "assets/Projects-BUL_y3xv.js",
+      "bytes": 4645,
+      "sha256": "54d50ef966a4b408ec998f69098a6da0e1f846b3b9a931ac9aad2f223b6f439b"
+    },
+    {
+      "file": "assets/ProjectSelect-CUK7eFwy.js",
+      "bytes": 988,
+      "sha256": "1ab64bd3cac5ee5ec0d6a6b5b4ce59136eae57f9f56dbed356e0ad53ded7ce26"
+    },
+    {
+      "file": "assets/ProjectSelect-D44rlVS_.css",
+      "bytes": 61,
+      "sha256": "b2e04fa82f53ea05e1f99cfd7e4d6f973b2926e71b5793613bef6a410a64409a"
+    },
+    {
+      "file": "assets/Stats-BgkSClcc.js",
+      "bytes": 495685,
+      "sha256": "96aa8708c35046a43a956a40ed7c7e79870f458bb8ebe79b947fd6b6b3b73833"
+    },
+    {
+      "file": "assets/Stats-BRvv9djO.css",
+      "bytes": 422,
+      "sha256": "29e0015d358ec718b9621b038f50db0eb0d03687d4f95d75a8683cdbf156a0e4"
+    },
+    {
+      "file": "assets/TaskList-9Dmi0QmD.css",
+      "bytes": 873,
+      "sha256": "9d017841fb2f70b1308e618ead19c60d9d5cb0cee037ea954c1fe10a01aa96d7"
+    },
+    {
+      "file": "assets/TaskList-UPcnRQ7p.js",
+      "bytes": 16624,
+      "sha256": "031439f7dc2055e41c4bff451cc108a98d3fb7b2d5a5fe696bf24ec611523aa7"
+    },
+    {
+      "file": "favicon.svg",
+      "bytes": 9522,
+      "sha256": "61bc9a161de58248288e6905425d7180f0624c2865007b97d763fdac12043a66"
+    },
+    {
+      "file": "icons.svg",
+      "bytes": 5031,
+      "sha256": "b45fa506195cfcdef406ba9f0c77b36ddc1a7c224040926ec70abc2fdea7b93a"
+    },
+    {
+      "file": "index.html",
+      "bytes": 521,
+      "sha256": "46b17c95beaf501889befc54495042885ab8363e35cfe1a50668a881562b8c5d"
+    }
+  ],
+  "http_resources": [
+    {
+      "file": "assets/index-B0y0pvvX.css",
+      "status": 200,
+      "content_type": "text/css; charset=utf-8",
+      "bytes": 321548,
+      "sha256": "752003bc4df60825e32f410c695cf977de807b48666ddef4d8bc48e2ca382b46",
+      "matches_deployed_artifact": true,
+      "error": null
+    },
+    {
+      "file": "assets/index-i63jE-ZR.js",
+      "status": 200,
+      "content_type": "application/javascript; charset=utf-8",
+      "bytes": 998102,
+      "sha256": "64d008033a48aeaadb20fa6cd4c012616b7a70d9b3a0eb514dca21e681c93bd9",
+      "matches_deployed_artifact": true,
+      "error": null
+    },
+    {
+      "file": "assets/Kanban-2SNSSZHt.js",
+      "status": 200,
+      "content_type": "application/javascript; charset=utf-8",
+      "bytes": 104459,
+      "sha256": "3064c7928b445158fe68bc0dc971e5c75b982a0850fdbd1aae6806a5d41d33c8",
+      "matches_deployed_artifact": true,
+      "error": null
+    },
+    {
+      "file": "assets/Kanban-Dw7y76Oo.css",
+      "status": 200,
+      "content_type": "text/css; charset=utf-8",
+      "bytes": 1015,
+      "sha256": "96b0d22571548ca493ab6a840d303745ba481fc9a77a205510d688576c3e58c2",
+      "matches_deployed_artifact": true,
+      "error": null
+    },
+    {
+      "file": "assets/Login-BddD7Flt.js",
+      "status": 200,
+      "content_type": "application/javascript; charset=utf-8",
+      "bytes": 1767,
+      "sha256": "307fd65351fbc6ca2aaf257b320d71e4f5bd517ce45fcf113f2ca7449f7f3140",
+      "matches_deployed_artifact": true,
+      "error": null
+    },
+    {
+      "file": "assets/Login-C4Lmu0-Z.css",
+      "status": 200,
+      "content_type": "text/css; charset=utf-8",
+      "bytes": 348,
+      "sha256": "d847ca6d451a4b78fabee946322d7371036a416e18533a2483774cf45f074d5c",
+      "matches_deployed_artifact": true,
+      "error": null
+    },
+    {
+      "file": "assets/Projects-Bd2TgYQS.css",
+      "status": 200,
+      "content_type": "text/css; charset=utf-8",
+      "bytes": 188,
+      "sha256": "bdd9ef113911c53319e6e46bccfee32ff70a159d9358b0d9a1f954a7ddee5a0f",
+      "matches_deployed_artifact": true,
+      "error": null
+    },
+    {
+      "file": "assets/Projects-BUL_y3xv.js",
+      "status": 200,
+      "content_type": "application/javascript; charset=utf-8",
+      "bytes": 4645,
+      "sha256": "54d50ef966a4b408ec998f69098a6da0e1f846b3b9a931ac9aad2f223b6f439b",
+      "matches_deployed_artifact": true,
+      "error": null
+    },
+    {
+      "file": "assets/ProjectSelect-CUK7eFwy.js",
+      "status": 200,
+      "content_type": "application/javascript; charset=utf-8",
+      "bytes": 988,
+      "sha256": "1ab64bd3cac5ee5ec0d6a6b5b4ce59136eae57f9f56dbed356e0ad53ded7ce26",
+      "matches_deployed_artifact": true,
+      "error": null
+    },
+    {
+      "file": "assets/ProjectSelect-D44rlVS_.css",
+      "status": 200,
+      "content_type": "text/css; charset=utf-8",
+      "bytes": 61,
+      "sha256": "b2e04fa82f53ea05e1f99cfd7e4d6f973b2926e71b5793613bef6a410a64409a",
+      "matches_deployed_artifact": true,
+      "error": null
+    },
+    {
+      "file": "assets/Stats-BgkSClcc.js",
+      "status": 200,
+      "content_type": "application/javascript; charset=utf-8",
+      "bytes": 495685,
+      "sha256": "96aa8708c35046a43a956a40ed7c7e79870f458bb8ebe79b947fd6b6b3b73833",
+      "matches_deployed_artifact": true,
+      "error": null
+    },
+    {
+      "file": "assets/Stats-BRvv9djO.css",
+      "status": 200,
+      "content_type": "text/css; charset=utf-8",
+      "bytes": 422,
+      "sha256": "29e0015d358ec718b9621b038f50db0eb0d03687d4f95d75a8683cdbf156a0e4",
+      "matches_deployed_artifact": true,
+      "error": null
+    },
+    {
+      "file": "assets/TaskList-9Dmi0QmD.css",
+      "status": 200,
+      "content_type": "text/css; charset=utf-8",
+      "bytes": 873,
+      "sha256": "9d017841fb2f70b1308e618ead19c60d9d5cb0cee037ea954c1fe10a01aa96d7",
+      "matches_deployed_artifact": true,
+      "error": null
+    },
+    {
+      "file": "assets/TaskList-UPcnRQ7p.js",
+      "status": 200,
+      "content_type": "application/javascript; charset=utf-8",
+      "bytes": 16624,
+      "sha256": "031439f7dc2055e41c4bff451cc108a98d3fb7b2d5a5fe696bf24ec611523aa7",
+      "matches_deployed_artifact": true,
+      "error": null
+    },
+    {
+      "file": "favicon.svg",
+      "status": 200,
+      "content_type": "image/svg+xml",
+      "bytes": 9522,
+      "sha256": "61bc9a161de58248288e6905425d7180f0624c2865007b97d763fdac12043a66",
+      "matches_deployed_artifact": true,
+      "error": null
+    },
+    {
+      "file": "icons.svg",
+      "status": 200,
+      "content_type": "image/svg+xml",
+      "bytes": 5031,
+      "sha256": "b45fa506195cfcdef406ba9f0c77b36ddc1a7c224040926ec70abc2fdea7b93a",
+      "matches_deployed_artifact": true,
+      "error": null
+    },
+    {
+      "file": "index.html",
+      "status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "bytes": 521,
+      "sha256": "46b17c95beaf501889befc54495042885ab8363e35cfe1a50668a881562b8c5d",
+      "matches_deployed_artifact": true,
+      "error": null
+    }
+  ],
+  "scope": "Actual deployed artifact and all static file HTTP byte hashes; full online browser business acceptance pending"
+}
