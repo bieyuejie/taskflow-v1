@@ -1,0 +1,30 @@
+RUN: 线上真实目标 https://bieyuejie.github.io/taskflow-v1/（独立临时浏览器配置）
+PASS: 线上1280px未知版本保留、取消零写入、确认重置失败仍保留、恢复重试成功
+PASS: 线上1280px项目新增/编辑/删除、名称查重、trim、写失败保留草稿、重试、ID和创建时间不变及刷新保持
+浏览器失败时页面： TaskFlow
+登录
+
+演示环境，任意账号密码均可登录
+
+项目删除成功
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
++ actual - expected
+
++ 'invalid-online-demo-token'
+- null
+
+    at verifyOnlineBrowserExtras (file:///D:/Frontend/project.v1/taskflow.v1/scripts/onlineBrowserCases.mjs:185:12)
+    at async file:///D:/Frontend/project.v1/taskflow.v1/scripts/verifyLazyRoutesBrowser.mjs:198:26 {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: 'invalid-online-demo-token',
+  expected: null,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.19.0

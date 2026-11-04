@@ -1,0 +1,27 @@
+RUN: 线上真实目标 https://bieyuejie.github.io/taskflow-v1/（独立临时浏览器配置）
+浏览器失败时页面： 重置失败，原数据已保留：存储写入失败，请检查浏览器权限或剩余空间后重试
+
+重试读取
+重置本地数据
+
+TaskFlow
+登录
+
+演示环境，任意账号密码均可登录
+
+确认重置本地数据
+
+重置将用默认项目和示例任务替换本机 V1 项目及任务数据，此操作不可撤销。
+
+取消
+确认重置
+file:///D:/Frontend/project.v1/taskflow.v1/scripts/verifyLazyRoutesBrowser.mjs:38
+  throw new Error(`等待超时：${label}`);
+        ^
+
+Error: 等待超时：确认恢复合法快照
+    at until (file:///D:/Frontend/project.v1/taskflow.v1/scripts/verifyLazyRoutesBrowser.mjs:38:9)
+    at async verifyOnlineBrowserExtras (file:///D:/Frontend/project.v1/taskflow.v1/scripts/onlineBrowserCases.mjs:90:5)
+    at async file:///D:/Frontend/project.v1/taskflow.v1/scripts/verifyLazyRoutesBrowser.mjs:198:26
+
+Node.js v24.19.0

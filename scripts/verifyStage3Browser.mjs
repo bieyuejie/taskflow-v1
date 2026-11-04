@@ -6,6 +6,7 @@ import path from 'node:path';
 import { setTimeout as delay } from 'node:timers/promises';
 import { fileURLToPath } from 'node:url';
 import { preview } from 'vite';
+import { createBrowserTarget } from './browserTarget.mjs';
 import { verifyDatesBrowser } from './verifyDatesBrowser.mjs';
 import {
   verifySubtaskCompletionBrowser,
@@ -15,6 +16,7 @@ import {
 } from './stage3BrowserCases.mjs';
 
 // 手动运行：仅使用全新临时浏览器配置，不连接用户已有窗口或浏览器数据。
+const browserTarget = createBrowserTarget();
 const executable =
   process.env.TASKFLOW_BROWSER_PATH ||
   [
@@ -31,7 +33,7 @@ const pending = new Map();
 const exceptions = [];
 
 async function until(action, label) {
-  const deadline = Date.now() + 10000;
+  const deadline = Date.now() + browserTarget.waitMs;
   while (Date.now() < deadline) {
     if (await action()) return;
     await delay(100);
@@ -100,10 +102,11 @@ const patchWrite = (key) =>
   };`);
 
 try {
-  server = await preview({
-    root: fileURLToPath(new URL('../', import.meta.url)),
-    preview: { host: '127.0.0.1', port: 4173, strictPort: false },
-  });
+  if (!browserTarget.url)
+    server = await preview({
+      root: fileURLToPath(new URL('../', import.meta.url)),
+      preview: { host: '127.0.0.1', port: 4173, strictPort: false },
+    });
   browser = spawn(
     executable,
     [
@@ -125,6 +128,7 @@ try {
   socket = new WebSocket(page.webSocketDebuggerUrl);
   socket.addEventListener('message', ({ data }) => {
     const message = JSON.parse(data);
+    browserTarget.onEvent(message);
     if (message.method === 'Runtime.exceptionThrown')
       exceptions.push(message.params.exceptionDetails.text);
     if (!pending.has(message.id)) return;
@@ -139,13 +143,15 @@ try {
   });
   await send('Runtime.enable');
   await send('Page.enable');
+  if (browserTarget.url) await send('Network.enable');
   await send('Emulation.setDeviceMetricsOverride', {
     width: 1280,
     height: 900,
     deviceScaleFactor: 1,
     mobile: false,
   });
-  const base = `http://127.0.0.1:${server.httpServer.address().port}/taskflow-v1/`;
+  const base =
+    browserTarget.url ?? `http://127.0.0.1:${server.httpServer.address().port}/taskflow-v1/`;
   await send('Page.navigate', { url: base });
   await shown('演示环境');
   await until(async () => (await readSnapshot())?.tasks.length === 3, '首启持久化');
@@ -186,6 +192,7 @@ try {
     await verify(context);
   }
   assert.deepEqual(exceptions, [], '第三阶段浏览器验收无未捕获异常');
+  browserTarget.assertHealthy();
   console.log('PASS: 第三阶段浏览器场景全部通过');
 } catch (error) {
   if (socket?.readyState === WebSocket.OPEN) {

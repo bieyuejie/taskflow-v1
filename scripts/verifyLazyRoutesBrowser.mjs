@@ -1,14 +1,21 @@
 import { verifyLazyRoutesBrowser } from './lazyRoutesBrowserCase.mjs';
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
-import { existsSync, mkdtempSync, readFileSync, rmSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { setTimeout as delay } from 'node:timers/promises';
 import { fileURLToPath } from 'node:url';
 import { preview } from 'vite';
+import { createBrowserTarget } from './browserTarget.mjs';
+import { verifyOnlineBrowserExtras, verifyOnlineTableScroll } from './onlineBrowserCases.mjs';
 
 // 手动运行：仅使用全新临时浏览器配置，不连接用户已有窗口或浏览器数据。
+const browserTarget = createBrowserTarget();
+const extrasOnly = process.argv.includes('--online-extras-only');
+const tablesOnly = process.argv.includes('--online-tables-only');
+assert(!(extrasOnly && tablesOnly), '补充场景选项不能同时指定');
+assert(!(extrasOnly || tablesOnly) || browserTarget.url, '补充线上场景只允许在线上目标模式运行');
 const executable =
   process.env.TASKFLOW_BROWSER_PATH ||
   [
@@ -25,7 +32,7 @@ const pending = new Map();
 const exceptions = [];
 
 async function until(action, label) {
-  const deadline = Date.now() + 10000;
+  const deadline = Date.now() + browserTarget.waitMs;
   while (Date.now() < deadline) {
     if (await action()) return;
     await delay(100);
@@ -94,10 +101,11 @@ const patchWrite = (key) =>
   };`);
 
 try {
-  server = await preview({
-    root: fileURLToPath(new URL('../', import.meta.url)),
-    preview: { host: '127.0.0.1', port: 4173, strictPort: false },
-  });
+  if (!browserTarget.url)
+    server = await preview({
+      root: fileURLToPath(new URL('../', import.meta.url)),
+      preview: { host: '127.0.0.1', port: 4173, strictPort: false },
+    });
   browser = spawn(
     executable,
     [
@@ -119,6 +127,7 @@ try {
   socket = new WebSocket(page.webSocketDebuggerUrl);
   socket.addEventListener('message', ({ data }) => {
     const message = JSON.parse(data);
+    browserTarget.onEvent(message);
     if (message.method === 'Runtime.exceptionThrown')
       exceptions.push(message.params.exceptionDetails.text);
     if (!pending.has(message.id)) return;
@@ -133,13 +142,15 @@ try {
   });
   await send('Runtime.enable');
   await send('Page.enable');
+  if (browserTarget.url) await send('Network.enable');
   await send('Emulation.setDeviceMetricsOverride', {
     width: 1280,
     height: 900,
     deviceScaleFactor: 1,
     mobile: false,
   });
-  const base = `http://127.0.0.1:${server.httpServer.address().port}/taskflow-v1/`;
+  const base =
+    browserTarget.url ?? `http://127.0.0.1:${server.httpServer.address().port}/taskflow-v1/`;
   await send('Page.navigate', { url: base });
   await shown('演示环境');
   await until(async () => (await readSnapshot())?.tasks.length === 3, '首启持久化');
@@ -156,8 +167,28 @@ try {
     until,
     patchWrite,
     exceptions,
+    seedData: await readData(),
+    capture: async (name) => {
+      assert(browserTarget.url, '补充截图只保存线上验收结果');
+      assert(/^[A-Z_0-9]+$/.test(name), '截图名称不能包含目录');
+      const date =
+        process.env.TASKFLOW_BROWSER_ARTIFACT_DATE ??
+        new Intl.DateTimeFormat('sv-SE', { timeZone: 'Asia/Shanghai' }).format(new Date());
+      assert(/^\d{4}-\d{2}-\d{2}$/.test(date));
+      await evaluate('window.scrollTo(0,0)');
+      await delay(250);
+      const screenshot = await send('Page.captureScreenshot', {
+        format: 'png',
+        captureBeyondViewport: true,
+      });
+      mkdirSync(new URL('../docs/stage6/', import.meta.url), { recursive: true });
+      writeFileSync(
+        new URL(`../docs/stage6/${name}_${date}.png`, import.meta.url),
+        Buffer.from(screenshot.data, 'base64')
+      );
+    },
   };
-  for (const width of [1280, 375, 768]) {
+  for (const width of extrasOnly || tablesOnly ? [] : [1280, 375, 768]) {
     await send('Emulation.setDeviceMetricsOverride', {
       width,
       height: 900,
@@ -167,8 +198,17 @@ try {
     console.log(`RUN: ${width}px 页面懒加载及图表资源释放`);
     await verifyLazyRoutesBrowser(context);
   }
+  if (browserTarget.url) {
+    if (!tablesOnly) await verifyOnlineBrowserExtras(context);
+    await verifyOnlineTableScroll(context);
+  }
   assert.deepEqual(exceptions, [], '页面懒加载浏览器验收无未捕获异常');
-  console.log('PASS: 页面懒加载浏览器场景全部通过');
+  browserTarget.assertHealthy();
+  console.log(
+    extrasOnly || tablesOnly
+      ? 'PASS: 指定的补充线上浏览器场景全部通过'
+      : 'PASS: 页面懒加载及适用的线上补充场景全部通过'
+  );
 } catch (error) {
   if (socket?.readyState === WebSocket.OPEN) {
     console.log(
