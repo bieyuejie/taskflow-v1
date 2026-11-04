@@ -1,0 +1,6 @@
+PASS: 首次登录页及任务列表实际资源记录中均无Stats/Kanban chunk
+PASS: 首次进入统计页请求独立资源 /taskflow-v1/assets/Stats-1YqHiCUa.js，两个图表及3/1/33%汇总正常
+PASS: 返回列表再进入统计页不重复请求模块；统计路由直接刷新正常，业务快照不变
+PASS: 看板首次导航才请求 /taskflow-v1/assets/Kanban-DTucLyD_.js，三列各1条任务，重访模块复用，直接刷新及快照正常
+PASS: 项目管理路由动态路径修正后，实际导航与直接刷新均正常，原项目和任务不变
+PASS: 统计页懒加载浏览器场景全部通过

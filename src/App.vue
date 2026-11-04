@@ -3,6 +3,7 @@
   <header v-if="route.path !== '/login'" class="app-header">
     <strong>TaskFlow</strong>
     <nav aria-label="主导航">
+      <router-link to="/projects">项目管理</router-link>
       <router-link to="/task-list">任务列表</router-link>
       <router-link to="/kanban">任务看板</router-link>
       <router-link to="/stats">数据统计</router-link>
@@ -16,6 +17,7 @@
 import { useRoute, useRouter } from 'vue-router';
 import { useUserStore } from './stores/user';
 import { useTaskStore } from './stores/task';
+import { useProjectStore } from './stores/project';
 import { useStorageStore } from './stores/storage';
 import StorageNotice from './components/StorageNotice.vue';
 import { ElMessage } from 'element-plus';
@@ -24,11 +26,13 @@ const route = useRoute();
 const router = useRouter();
 const userStore = useUserStore();
 const taskStore = useTaskStore();
+const projectStore = useProjectStore();
 const storageStore = useStorageStore();
 const logout = () => {
   const result = userStore.logout();
   if (!result.ok) ElMessage.error(result.reason);
   taskStore.clearTasks();
+  projectStore.setCurrentProject('');
   router.replace('/login');
 };
 </script>

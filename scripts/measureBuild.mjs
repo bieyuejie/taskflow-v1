@@ -8,8 +8,10 @@ import { gzipSync } from 'node:zlib';
 // 只读取刚生成的 dist；构建由 npm run build 独立完成，避免把测量当作优化。
 const root = fileURLToPath(new URL('../', import.meta.url));
 const label = process.argv[2];
+const stage = process.argv[3] ?? 'stage1';
 assert(/^[a-z][a-z0-9-]*$/.test(label ?? ''), '请提供记录名称，例如 baseline');
-const destination = path.join(root, 'docs', 'stage1', `${label}-build.json`);
+assert(/^stage[1-6]$/.test(stage), '阶段须为 stage1～stage6');
+const destination = path.join(root, 'docs', stage, `${label}-build.json`);
 assert(!existsSync(destination), '指标已存在，请使用新的记录名称，不覆盖历史数据');
 
 function listFiles(directory) {

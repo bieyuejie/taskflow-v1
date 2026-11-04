@@ -1,4 +1,21 @@
-import * as echarts from 'echarts';
+import * as echarts from 'echarts/core';
+import { PieChart, BarChart } from 'echarts/charts';
+import {
+  TitleComponent,
+  TooltipComponent,
+  LegendComponent,
+  GridComponent,
+} from 'echarts/components';
+import { CanvasRenderer } from 'echarts/renderers';
+echarts.use([
+  PieChart,
+  BarChart,
+  TitleComponent,
+  TooltipComponent,
+  LegendComponent,
+  GridComponent,
+  CanvasRenderer,
+]);
 
 // 组件传入模板 ref，图表接入及尺寸监听封装在工具层。
 export function createStatsCharts(pieElement, barElement) {

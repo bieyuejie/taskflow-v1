@@ -8,13 +8,16 @@ const request = axios.create({
 });
 
 async function handleUnauthorized(msg) {
-  const [{ useUserStore }, { default: router }, { useTaskStore }] = await Promise.all([
-    import('../stores/user'),
-    import('../router'),
-    import('../stores/task'),
-  ]);
+  const [{ useUserStore }, { default: router }, { useTaskStore }, { useProjectStore }] =
+    await Promise.all([
+      import('../stores/user'),
+      import('../router'),
+      import('../stores/task'),
+      import('../stores/project'),
+    ]);
   const logoutResult = useUserStore().logout();
   useTaskStore().clearTasks();
+  useProjectStore().setCurrentProject('');
   ElMessage.error(logoutResult.ok ? msg || '未授权，请重新登录' : logoutResult.reason);
   await router.replace('/login');
 }

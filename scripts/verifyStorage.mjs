@@ -60,7 +60,11 @@ async function withFixture(rawValue, run, options = {}) {
       headers: { Authorization: token },
     });
     setActivePinia(createPinia());
-    await run({ memory, fault, repo, client, server });
+    const taskDraft = {
+      ...draft,
+      projectId: repo.getState()?.projects[0]?.id || '1700000000000',
+    };
+    await run({ memory, fault, repo, client, server, taskDraft });
   } finally {
     await server?.close();
     if (previous) Object.defineProperty(globalThis, 'localStorage', previous);
@@ -73,12 +77,12 @@ export async function verifyStorage() {
     '{{ broken json',
     JSON.stringify({ schemaVersion: 999, projects: [], tasks: [] }),
   ]) {
-    await withFixture(original, async ({ memory, fault, repo, client }) => {
+    await withFixture(original, async ({ memory, fault, repo, client, taskDraft }) => {
       assert.equal(memory.get(dataKey), original, '启动不能覆盖损坏或未知版本原值');
       assert.equal(fault.writes.length, 0);
       assert.equal(repo.getState(), null);
       assert.equal((await client.get('/tasks')).data.code, 400);
-      assert.equal((await client.post('/tasks', draft)).data.code, 400);
+      assert.equal((await client.post('/tasks', taskDraft)).data.code, 400);
       assert.equal((await client.post('/storage/reset', {})).data.code, 400);
       assert.equal(memory.get(dataKey), original, '未确认重置不能写入');
       assert.equal((await client.post('/storage/retry')).data.code, 400);
@@ -131,19 +135,19 @@ export async function verifyStorage() {
   );
   console.log('PASS: 读取异常独立反馈、首次写失败不发布内存及重试');
 
-  await withFixture(null, async ({ memory, fault, repo, client }) => {
+  await withFixture(null, async ({ memory, fault, repo, client, taskDraft }) => {
     const before = repo.getState();
     const beforeRaw = memory.get(dataKey);
     fault.writeKeys.add(dataKey);
     fault.writes.length = 0;
-    const failed = (await client.post('/tasks', draft)).data;
+    const failed = (await client.post('/tasks', taskDraft)).data;
     assert.equal(failed.code, 400);
     assert.match(failed.msg, /存储|保存/);
     assert.equal(fault.writes.filter((key) => key === dataKey).length, 1, '必须真正触发setItem');
     assert.deepEqual(repo.getState(), before);
     assert.equal(memory.get(dataKey), beforeRaw);
     fault.writeKeys.clear();
-    assert.equal((await client.post('/tasks', draft)).data.code, 200);
+    assert.equal((await client.post('/tasks', taskDraft)).data.code, 200);
     assert.equal(repo.getState().tasks.length, 4, '重试只新增一次');
     const state = repo.getState();
     const raw = memory.get(dataKey);
@@ -197,8 +201,8 @@ export async function verifyStorage() {
     assert.equal(fault.writes.length, 0);
   });
   let saved;
-  await withFixture(null, async ({ memory, fault, client }) => {
-    const created = (await client.post('/tasks', draft)).data;
+  await withFixture(null, async ({ memory, fault, client, taskDraft }) => {
+    const created = (await client.post('/tasks', taskDraft)).data;
     assert.equal(created.code, 200);
     assert.equal(
       (await client.put(`/tasks/${created.data.id}`, { title: '重载保留', status: 'done' })).data
@@ -212,7 +216,7 @@ export async function verifyStorage() {
     assert.equal(fault.writes.filter((key) => key === dataKey).length, 4);
     saved = memory.get(dataKey);
   });
-  await withFixture(saved, async ({ client, fault }) => {
+  await withFixture(saved, async ({ client, fault, taskDraft }) => {
     const result = (await client.get('/tasks')).data;
     assert.equal(result.data.total, 3);
     assert(result.data.list.some((task) => task.title === '重载保留' && task.status === 'done'));
@@ -220,7 +224,7 @@ export async function verifyStorage() {
     const now = Date.now;
     try {
       Date.now = () => 1700000000001;
-      const created = (await client.post('/tasks', draft)).data;
+      const created = (await client.post('/tasks', taskDraft)).data;
       assert.equal(created.code, 200, '独立模块重载且时钟回拨时仍可新增');
       assert(
         BigInt(created.data.id) >
@@ -241,8 +245,10 @@ export async function verifyStorage() {
   exhausted.projects[0].id = '8640000000000000';
   exhausted.tasks = [];
   const exhaustedRaw = JSON.stringify(exhausted);
-  await withFixture(exhaustedRaw, async ({ client, memory, fault }) => {
-    assert.equal((await client.post('/tasks', draft)).data.code, 400);
+  await withFixture(exhaustedRaw, async ({ client, memory, fault, taskDraft }) => {
+    const result = (await client.post('/tasks', taskDraft)).data;
+    assert.equal(result.code, 400);
+    assert.match(result.msg, /ID/);
     assert.equal(memory.get(dataKey), exhaustedRaw);
     assert.equal(fault.writes.length, 0);
   });

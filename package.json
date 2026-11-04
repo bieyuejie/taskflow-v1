@@ -12,6 +12,7 @@
     "format": "prettier --write src scripts index.html package.json vite.config.js .github/workflows/deploy.yml",
     "format:check": "prettier --check src scripts index.html package.json vite.config.js .github/workflows/deploy.yml",
     "verify": "node scripts/verify.mjs",
+    "verify:browser": "node scripts/verifyBrowser.mjs && node scripts/verifyStage3Browser.mjs && node scripts/verifyStage4Browser.mjs && node scripts/verifyLazyRoutesBrowser.mjs",
     "check": "npm run lint && npm run format:check && npm run verify",
     "measure:build": "node scripts/measureBuild.mjs"
   },

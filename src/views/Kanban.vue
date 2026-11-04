@@ -2,7 +2,17 @@
   <div class="kanban-page">
     <h2>任务看板</h2>
 
-    <div v-loading="taskStore.loading" class="kanban-columns">
+    <ProjectSelect
+      :model-value="projectStore.currentProjectId"
+      :projects="projectStore.projects"
+      :loading="loading"
+      :disabled="loading || saving"
+      @update:model-value="handleProjectChange"
+    />
+    <el-alert v-if="loadFailed" title="看板数据加载失败，请重试" type="error" :closable="false">
+      <el-button :loading="loading" :disabled="saving" @click="retryLoad"> 重试 </el-button>
+    </el-alert>
+    <div v-else v-loading="loading || saving" class="kanban-columns">
       <!-- 待办列 -->
       <div class="kanban-column">
         <div class="column-header">
@@ -16,7 +26,7 @@
           class="task-list"
           ghost-class="ghost-card"
           animation="200"
-          :disabled="taskStore.loading || saving"
+          :disabled="loading || saving"
           @change="(evt) => handleChange(evt, 'todo')"
         >
           <template #item="{ element }">
@@ -38,7 +48,7 @@
           class="task-list"
           ghost-class="ghost-card"
           animation="200"
-          :disabled="taskStore.loading || saving"
+          :disabled="loading || saving"
           @change="(evt) => handleChange(evt, 'doing')"
         >
           <template #item="{ element }">
@@ -60,7 +70,7 @@
           class="task-list"
           ghost-class="ghost-card"
           animation="200"
-          :disabled="taskStore.loading || saving"
+          :disabled="loading || saving"
           @change="(evt) => handleChange(evt, 'done')"
         >
           <template #item="{ element }">
@@ -73,13 +83,19 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted } from 'vue';
+import { ref, watch, onMounted, onUnmounted } from 'vue';
 import draggable from 'vuedraggable';
 import TaskCard from '../components/TaskCard.vue';
 import { useTaskStore } from '../stores/task';
+import { useProjectStore } from '../stores/project.js';
+import ProjectSelect from '../components/ProjectSelect.vue';
 
 const taskStore = useTaskStore();
+const projectStore = useProjectStore();
 const saving = ref(false);
+const loadFailed = ref(false);
+const loading = ref(false);
+let isActive = true;
 
 // 三列本地数组，对应模板里三个 v-model
 const todoTasks = ref([]);
@@ -98,27 +114,69 @@ watch(() => taskStore.allTasks, syncColumns, { immediate: true });
 // 拖拽完成后触发：只有卡片被拖入这一列时，才更新状态
 const handleChange = async (evt, newStatus) => {
   if (evt.added) {
+    if (saving.value || loading.value || loadFailed.value || !isActive) {
+      syncColumns(taskStore.allTasks);
+      return;
+    }
     const task = evt.added.element;
     saving.value = true;
     try {
       await taskStore.updateStatus(task.id, newStatus);
-      await taskStore.fetchAllForKanban();
+      if (!isActive) return;
+
+      try {
+        await taskStore.fetchAllForKanban(projectStore.currentProjectId);
+      } catch {
+        if (isActive) loadFailed.value = true;
+      }
     } catch {
-      // 请求层会统一展示错误信息，恢复为 Store 中的最后一次有效状态。
-      syncColumns(taskStore.allTasks);
+      if (isActive) syncColumns(taskStore.allTasks);
     } finally {
       saving.value = false;
     }
   }
 };
 
-// 页面加载时，拉取所有任务
-onMounted(async () => {
+const handleProjectChange = async (projectId) => {
+  if (loading.value || saving.value || !isActive) return;
+  if (!projectStore.setCurrentProject(projectId)) return;
+
+  loading.value = true;
+
   try {
-    await taskStore.fetchAllForKanban();
+    await taskStore.fetchAllForKanban(projectId);
+    if (isActive) loadFailed.value = false;
   } catch {
-    // 请求层会统一展示错误信息。
+    if (isActive) loadFailed.value = true;
+  } finally {
+    loading.value = false;
   }
+};
+// 页面加载时，先获取项目，再加载当前项目的任务。
+const retryLoad = async () => {
+  if (loading.value || saving.value || !isActive) return;
+  loading.value = true;
+
+  try {
+    await projectStore.fetchProjects();
+    if (!isActive) return;
+
+    if (!projectStore.setCurrentProject(projectStore.currentProjectId)) {
+      projectStore.setCurrentProject('');
+    }
+
+    await taskStore.fetchAllForKanban(projectStore.currentProjectId);
+    if (isActive) loadFailed.value = false;
+  } catch {
+    if (isActive) loadFailed.value = true;
+  } finally {
+    loading.value = false;
+  }
+};
+
+onMounted(retryLoad);
+onUnmounted(() => {
+  isActive = false;
 });
 </script>
 

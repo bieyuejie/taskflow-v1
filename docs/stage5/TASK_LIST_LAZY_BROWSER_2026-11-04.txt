@@ -1,0 +1,8 @@
+PASS: 登录前未请求TaskList，登录后首次进入才请求 /taskflow-v1/assets/TaskList-DHyIMyWS.js，默认3条任务正常
+PASS: 首次登录页及任务列表实际资源记录中均无Stats/Kanban chunk
+PASS: 首次进入统计页请求独立资源 /taskflow-v1/assets/Stats-CoDwhL9t.js，两个图表及3/1/33%汇总正常
+PASS: 返回列表再进入统计页不重复请求模块；统计路由直接刷新正常，业务快照不变
+PASS: 看板首次导航才请求 /taskflow-v1/assets/Kanban-CO-O6h01.js，三列各1条任务，重访模块复用，直接刷新及快照正常
+PASS: 项目管理路由动态路径修正后，实际导航与直接刷新均正常，原项目和任务不变
+PASS: 统计/看板/项目页冷刷新均不预加载TaskList；导航、重访和列表直接刷新正常，快照保留
+PASS: 页面懒加载浏览器场景全部通过

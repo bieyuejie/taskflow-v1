@@ -9,6 +9,7 @@ import {
   resetRepository,
 } from './repository';
 import { genId } from '../utils/id';
+import { getLocalDate, isOverdue } from '../utils/date';
 
 initRepository();
 const mock = new MockAdapter(request);
@@ -70,23 +71,178 @@ function validTask(task) {
   );
 }
 
+function validPage(value) {
+  return (
+    (typeof value === 'number' || (typeof value === 'string' && /^\d+$/.test(value))) &&
+    Number.isSafeInteger(Number(value)) &&
+    Number(value) > 0
+  );
+}
+
+mock.onGet('/projects').reply((config) => {
+  const unauthorized = authorize(config);
+  if (unauthorized) return unauthorized;
+
+  return [
+    200,
+    {
+      code: 200,
+      data: getState().projects,
+      msg: 'ok',
+    },
+  ];
+});
+
+mock.onPost('/projects').reply((config) => {
+  const unauthorized = authorize(config);
+  if (unauthorized) return unauthorized;
+
+  const body = parseBody(config);
+
+  if (!body || typeof body.name !== 'string' || typeof body.desc !== 'string') {
+    return [200, { code: 400, data: null, msg: '项目字段不合法' }];
+  }
+
+  let project;
+
+  const result = saveSnapshot((state) => {
+    project = {
+      id: genId(),
+      name: body.name.trim(),
+      desc: body.desc,
+      createTime: Date.now(),
+    };
+
+    state.projects.push(project);
+    return state;
+  });
+
+  if (!result.ok) {
+    return [200, { code: 400, data: null, msg: result.reason }];
+  }
+
+  return [200, { code: 200, data: project, msg: '项目新增成功' }];
+});
+
+mock.onPut(/^\/api\/projects\/\d+$/).reply((config) => {
+  const unauthorized = authorize(config);
+  if (unauthorized) return unauthorized;
+
+  const id = config.url.split('/').pop();
+  const body = parseBody(config);
+
+  if (
+    !body ||
+    typeof body.name !== 'string' ||
+    typeof body.desc !== 'string' ||
+    Object.keys(body).some((key) => !['name', 'desc'].includes(key))
+  ) {
+    return [200, { code: 400, data: null, msg: '只能编辑项目名称和描述' }];
+  }
+
+  let updated;
+
+  const result = saveSnapshot((state) => {
+    const project = state.projects.find((item) => item.id === id);
+    if (!project) throw new Error('项目不存在');
+
+    project.name = body.name.trim();
+    project.desc = body.desc;
+    updated = project;
+
+    return state;
+  });
+
+  if (!result.ok) {
+    return [200, { code: 400, data: null, msg: result.reason }];
+  }
+
+  return [200, { code: 200, data: updated, msg: '项目编辑成功' }];
+});
+
+mock.onDelete(/^\/api\/projects\/\d+$/).reply((config) => {
+  const unauthorized = authorize(config);
+  if (unauthorized) return unauthorized;
+
+  const id = config.url.split('/').pop();
+
+  const result = saveSnapshot((state) => {
+    const index = state.projects.findIndex((project) => project.id === id);
+
+    if (index === -1) {
+      throw new Error('项目不存在');
+    }
+
+    if (state.projects.length <= 1) {
+      throw new Error('至少保留一个项目');
+    }
+
+    state.projects.splice(index, 1);
+    state.tasks = state.tasks.filter((task) => task.projectId !== id);
+
+    return state;
+  });
+
+  if (!result.ok) {
+    return [200, { code: 400, data: null, msg: result.reason }];
+  }
+
+  return [200, { code: 200, data: null, msg: '项目删除成功' }];
+});
+
 mock.onGet('/tasks').reply((config) => {
   const unauthorized = authorize(config);
   if (unauthorized) return unauthorized;
-  const { keyword = '', status = '', page = 1, pageSize = 10 } = config.params || {};
+  const {
+    keyword = '',
+    status = '',
+    projectId = '',
+    parentId,
+    overdue = false,
+    page = 1,
+    pageSize = 10,
+  } = config.params || {};
   if (
     typeof keyword !== 'string' ||
+    typeof status !== 'string' ||
+    typeof projectId !== 'string' ||
+    ![true, false, 'true', 'false'].includes(overdue) ||
+    (projectId && !getState().projects.some((project) => project.id === projectId)) ||
     (status && !['todo', 'doing', 'done'].includes(status)) ||
-    !Number.isInteger(Number(page)) ||
-    Number(page) < 1 ||
-    !Number.isInteger(Number(pageSize)) ||
-    Number(pageSize) < 1
+    !validPage(page) ||
+    !validPage(pageSize)
   ) {
     return [200, { code: 400, data: null, msg: '查询参数不合法' }];
   }
-  const all = getState().tasks.filter((t) => t.parentId === null);
+
+  if (parentId !== undefined && parentId !== 'root') {
+    const parent = getState().tasks.find((task) => task.id === parentId && task.parentId === null);
+
+    if (!parent) {
+      return [200, { code: 400, data: null, msg: '父任务不存在或不是顶层任务' }];
+    }
+  }
+
+  const all = getState().tasks.filter((task) => {
+    if (projectId && task.projectId !== projectId) return false;
+
+    if (parentId === 'root') {
+      return task.parentId === null;
+    }
+
+    if (parentId !== undefined) {
+      return task.parentId === parentId;
+    }
+
+    return true;
+  });
+  const today = getLocalDate();
+  const onlyOverdue = overdue === true || overdue === 'true';
   const list = all.filter(
-    (t) => t.title.includes(keyword) && (status ? t.status === status : true)
+    (t) =>
+      t.title.includes(keyword) &&
+      (status ? t.status === status : true) &&
+      (!onlyOverdue || isOverdue(t, today))
   );
   const start = (page - 1) * pageSize;
   return [
@@ -103,20 +259,50 @@ mock.onPost('/tasks').reply((config) => {
   const unauthorized = authorize(config);
   if (unauthorized) return unauthorized;
   const body = parseBody(config);
-  if (!validTask(body)) return [200, { code: 400, data: null, msg: '任务字段不合法' }];
+  if (!validTask(body) || typeof body.projectId !== 'string') {
+    return [200, { code: 400, data: null, msg: '任务字段不合法' }];
+  }
+  if (!getState().projects.some((project) => project.id === body.projectId)) {
+    return [200, { code: 400, data: null, msg: '所属项目不存在' }];
+  }
   let newTask;
   const result = saveSnapshot((state) => {
+    const parentId = body.parentId === undefined ? null : body.parentId;
+    const parent = state.tasks.find((task) => task.id === parentId);
+
+    if (
+      parentId !== null &&
+      (!parent || parent.parentId !== null || parent.projectId !== body.projectId)
+    ) {
+      throw new Error('父任务必须是同一项目中的顶层任务');
+    }
+
+    if (parent) {
+      if (!['todo', 'done'].includes(body.status)) {
+        throw new Error('子任务状态只能是待办或已完成');
+      }
+
+      if (body.dueDate !== undefined && body.dueDate !== null) {
+        throw new Error('子任务不能设置截止日期');
+      }
+    }
+
     newTask = {
       id: genId(),
       title: body.title.trim(),
       desc: body.desc,
       status: body.status,
-      priority: body.priority,
+      priority: parent ? parent.priority : body.priority,
       createTime: Date.now(),
-      projectId: state.projects[0].id, // 第三阶段再接入项目选择。
-      parentId: null,
-      dueDate: null,
+      projectId: body.projectId,
+      parentId,
+      dueDate: body.dueDate === undefined ? null : body.dueDate,
     };
+
+    if (parent && parent.status === 'done') {
+      parent.status = 'doing';
+    }
+
     state.tasks.unshift(newTask);
     return state;
   });
@@ -129,11 +315,27 @@ mock.onPut(/^\/api\/tasks\/\d+$/).reply((config) => {
   if (unauthorized) return unauthorized;
   const id = config.url.split('/').pop();
   const body = parseBody(config);
-  if (!body) return [200, { code: 400, data: null, msg: '任务字段不合法' }];
+  if (!body || typeof body !== 'object' || Array.isArray(body)) {
+    return [200, { code: 400, data: null, msg: '任务字段不合法' }];
+  }
 
   const current = getState().tasks.find((t) => t.id === id);
   if (!current) return [200, { code: 400, data: null, msg: '任务不存在' }];
 
+  if (Object.hasOwn(body, 'projectId') && body.projectId !== current.projectId) {
+    return [200, { code: 400, data: null, msg: '任务所属项目不可修改' }];
+  }
+
+  if (Object.hasOwn(body, 'parentId') && body.parentId !== current.parentId) {
+    return [200, { code: 400, data: null, msg: '任务父子关系不可修改' }];
+  }
+  if (
+    ['id', 'createTime'].some(
+      (field) => Object.hasOwn(body, field) && body[field] !== current[field]
+    )
+  ) {
+    return [200, { code: 400, data: null, msg: '任务 ID 和创建时间不可修改' }];
+  }
   if (!validTask({ ...current, ...body })) {
     return [200, { code: 400, data: null, msg: '任务字段不合法' }];
   }
@@ -147,8 +349,23 @@ mock.onPut(/^\/api\/tasks\/\d+$/).reply((config) => {
       desc: body.desc ?? current.desc,
       status: body.status ?? current.status,
       priority: body.priority ?? current.priority,
+      dueDate: Object.hasOwn(body, 'dueDate') ? body.dueDate : current.dueDate,
     };
     state.tasks[index] = updated;
+    if (updated.parentId === null) {
+      state.tasks.forEach((task) => {
+        if (task.parentId === updated.id) {
+          task.priority = updated.priority;
+        }
+      });
+    }
+    if (updated.parentId !== null && updated.status === 'todo') {
+      const parent = state.tasks.find((task) => task.id === updated.parentId);
+
+      if (parent && parent.status === 'done') {
+        parent.status = 'doing';
+      }
+    }
     return state;
   });
 
@@ -166,7 +383,7 @@ mock.onDelete(/^\/api\/tasks\/\d+$/).reply((config) => {
   }
 
   const result = saveSnapshot((state) => {
-    state.tasks = state.tasks.filter((t) => t.id !== id);
+    state.tasks = state.tasks.filter((task) => task.id !== id && task.parentId !== id);
     return state;
   });
 

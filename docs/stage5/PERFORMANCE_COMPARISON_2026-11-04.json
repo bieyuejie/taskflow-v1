@@ -1,0 +1,48 @@
+{
+  "date": "2026-11-04",
+  "units": "bytes; kB = bytes / 1000; gzip sum per JS file",
+  "records": {
+    "before": "stage5-before-2026-11-04-build.json",
+    "routesOnly": "stage5-routes-lazy-2026-11-04-build.json",
+    "after": "stage5-after-2026-11-04-build.json"
+  },
+  "sameEnvironment": true,
+  "sameDependencies": true,
+  "inputChanges": [
+    "package.json",
+    "src/router/index.js",
+    "src/utils/statsCharts.js"
+  ],
+  "before": {
+    "totalBytes": 2166382,
+    "totalGzipBytes": 722921,
+    "largestChunkBytes": 2161732,
+    "chunks": 2
+  },
+  "routesOnly": {
+    "totalBytes": 2161911,
+    "totalGzipBytes": 724235,
+    "largestChunkBytes": 1035326,
+    "chunks": 7
+  },
+  "after": {
+    "totalBytes": 1622270,
+    "totalGzipBytes": 547485,
+    "largestChunkBytes": 998102,
+    "chunks": 7
+  },
+  "improvements": {
+    "totalBytes": {
+      "savedBytes": 544112,
+      "reductionPercent": 25.1162
+    },
+    "totalGzipBytes": {
+      "savedBytes": 175436,
+      "reductionPercent": 24.2677
+    },
+    "largestChunkBytes": {
+      "savedBytes": 1163630,
+      "reductionPercent": 53.8286
+    }
+  }
+}

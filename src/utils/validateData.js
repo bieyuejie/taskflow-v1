@@ -1,3 +1,5 @@
+import { isDueDate } from './date.js';
+
 export const SCHEMA_VERSION = 1;
 
 const STATUSES = ['todo', 'doing', 'done'];
@@ -22,19 +24,6 @@ function isTimestamp(value) {
 
 function isId(value) {
   return typeof value === 'string' && /^(0|[1-9]\d*)$/.test(value) && isTimestamp(Number(value));
-}
-
-function isDueDate(value) {
-  if (value === null) return true;
-  if (typeof value !== 'string') return false;
-  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
-  if (!match) return false;
-
-  const [year, month, day] = match.slice(1).map(Number);
-  if (year < 1 || month < 1 || month > 12 || day < 1) return false;
-  const leapYear = year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
-  const daysInMonth = [31, leapYear ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-  return day <= daysInMonth[month - 1];
 }
 
 function validateProject(p) {

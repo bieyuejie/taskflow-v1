@@ -6,6 +6,8 @@ import path from 'node:path';
 import { setTimeout as delay } from 'node:timers/promises';
 import { fileURLToPath } from 'node:url';
 import { preview } from 'vite';
+import { verifyProjectDeletion } from './verifyProjectDeletion.mjs';
+import { verifyTaskProjectOwnership } from './verifyTaskProjectOwnership.mjs';
 
 // 手动运行：仅使用全新临时浏览器配置，不连接用户已有窗口或浏览器数据。
 const executable =
@@ -71,7 +73,18 @@ const readSnapshot = async () => {
   }
 };
 const reload = async (text) => {
+  const previousOrigin = await evaluate('performance.timeOrigin');
   await send('Page.reload');
+  await until(async () => {
+    try {
+      return await evaluate(
+        `performance.timeOrigin !== ${previousOrigin} && document.readyState === 'complete'`
+      );
+    } catch {
+      // 刷新替换执行上下文期间继续等待新文档。
+      return false;
+    }
+  }, '刷新完成');
   await shown(text);
 };
 const patchWrite = (key) =>
@@ -233,6 +246,30 @@ try {
   await shown('失败后重试');
   assert.equal(await readData(), original);
   console.log('PASS: 浏览器读取异常保留原数据、暂停业务、重试恢复及375/768px提示无横向溢出');
+  await verifyProjectDeletion({
+    evaluate,
+    send,
+    shown,
+    click,
+    fill,
+    readData,
+    readSnapshot,
+    reload,
+    until,
+    patchWrite,
+  });
+  await verifyTaskProjectOwnership({
+    evaluate,
+    send,
+    shown,
+    click,
+    fill,
+    readData,
+    readSnapshot,
+    reload,
+    until,
+    patchWrite,
+  });
   assert.deepEqual(exceptions, [], '浏览器不应有未捕获的运行异常');
 } catch (error) {
   if (socket?.readyState === WebSocket.OPEN) {

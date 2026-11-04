@@ -5,17 +5,28 @@ import { createPinia, setActivePinia } from 'pinia';
 import { createServer } from 'vite';
 import './verifyData.mjs';
 import { verifyStorage } from './verifyStorage.mjs';
+import { verifyProjectFilters } from './verifyProjectFilters.mjs';
+import { verifySubtaskQueries } from './verifySubtaskQueries.mjs';
+import { verifySubtaskCompletion } from './verifySubtaskCompletion.mjs';
+import { verifySubtaskEdits } from './verifySubtaskEdits.mjs';
+import { verifySubtaskDeletion } from './verifySubtaskDeletion.mjs';
+import { verifyTaskRelations } from './verifyTaskRelations.mjs';
+import { verifyDates } from './verifyDates.mjs';
 
 assert.equal(Number(process.versions.node.split('.')[0]), 24, '本项目使用 Node 24.x');
 
 // 仅在此 Node 进程模拟浏览器存储，绝不读取用户浏览器或磁盘上的任务数据。
 const previousStorage = Object.getOwnPropertyDescriptor(globalThis, 'localStorage');
 const memory = new Map();
+let dataWrites = 0;
 Object.defineProperty(globalThis, 'localStorage', {
   configurable: true,
   value: {
     getItem: (key) => memory.get(key) ?? null,
-    setItem: (key, value) => memory.set(key, String(value)),
+    setItem: (key, value) => {
+      if (key === 'taskflow_v1_data') dataWrites += 1;
+      memory.set(key, String(value));
+    },
     removeItem: (key) => memory.delete(key),
   },
 });
@@ -54,7 +65,8 @@ try {
   memory.set('taskflow_v1_token', login.data.token);
   console.log('PASS: Mock 未授权、空白登录校验及演示登录');
 
-  const invalidTask = { title: 'invalid', desc: '', status: 'unknown', priority: 'low' };
+  const projectId = (await raw.get('/projects')).data.data[0].id;
+  const invalidTask = { title: 'invalid', desc: '', status: 'unknown', priority: 'low', projectId };
   assert.equal((await raw.post('/tasks', invalidTask)).data.code, 400);
   assert.equal((await raw.get('/tasks', { params: { page: 0 } })).data.code, 400);
   assert.equal((await raw.get('/tasks', { params: { pageSize: -1 } })).data.code, 400);
@@ -70,7 +82,13 @@ try {
   const store = useTaskStore();
   await store.fetchTasks();
   assert.equal(store.total, 3);
-  const draft = { title: '阶段一断言', desc: 'memory only', status: 'todo', priority: 'high' };
+  const draft = {
+    title: '阶段一断言',
+    desc: 'memory only',
+    status: 'todo',
+    priority: 'high',
+    projectId,
+  };
   await Promise.all(Array.from({ length: 102 }, () => request.post('/tasks', draft)));
   await store.fetchTasks();
   assert.equal(store.total, 105);
@@ -87,7 +105,68 @@ try {
     store.priorityCounts.reduce((sum, count) => sum + count, 0),
     105
   );
+  assert.deepEqual(
+    store.taskSummary,
+    { total: 105, done: 1, percentage: 1 },
+    '汇总应使用全部105条顶层任务，完成率四舍五入1%'
+  );
   console.log('PASS: 105 条跨页读取、列表隔离、唯一 ID 与统计计数');
+
+  // 第二页异常为空时，不得发布第一页的100条部分数据。
+  const completeTasks = store.allTasks;
+  const completeTaskData = JSON.parse(JSON.stringify(completeTasks));
+  const completeSummary = { ...store.taskSummary };
+  const originalList = store.taskList;
+  const originalTotal = store.total;
+  const snapshotBeforeEmptyPage = memory.get('taskflow_v1_data');
+  const writesBeforeEmptyPage = dataWrites;
+  const emptyPageRequests = [];
+  request.defaults.adapter = async (config) => {
+    const response = await originalAdapter(config);
+    if (config.method === 'get' && config.url === '/tasks') {
+      emptyPageRequests.push({ page: config.params.page, projectId: config.params.projectId });
+      if (config.params.page === 2) {
+        assert.equal(response.data.code, 200);
+        assert.equal(response.data.data.total, 105);
+        assert.equal(response.data.data.list.length, 5, '先确认第二页原本有5条真实任务');
+        return {
+          ...response,
+          data: { ...response.data, data: { ...response.data.data, list: [] } },
+        };
+      }
+    }
+    return response;
+  };
+  try {
+    await assert.rejects(store.fetchAllTasks(projectId), /任务加载不完整，请重试/);
+  } finally {
+    request.defaults.adapter = originalAdapter;
+  }
+  assert.deepEqual(emptyPageRequests, [
+    { page: 1, projectId },
+    { page: 2, projectId },
+  ]);
+  assert.strictEqual(store.allTasks, completeTasks, '失败不替换最近有效的全量缓存');
+  assert.deepEqual(store.allTasks, completeTaskData, '缓存内容保持完整且未修改');
+  assert.deepEqual(store.taskSummary, completeSummary, '汇总不能降为第一页的100条');
+  assert.strictEqual(store.taskList, originalList, '全量查询失败不替换分页列表');
+  assert.equal(store.total, originalTotal);
+  assert.equal(store.loading, false, '失败后解除加载状态，允许重试');
+  assert.equal(memory.get('taskflow_v1_data'), snapshotBeforeEmptyPage);
+  assert.equal(dataWrites, writesBeforeEmptyPage, '失败查询不能写入业务存储');
+
+  await store.fetchAllForKanban(projectId);
+  assert.deepEqual(store.allTasks, completeTaskData, '恢复后重试完整加载105条任务');
+  assert.deepEqual(store.taskSummary, completeSummary);
+  assert.equal(new Set(store.allTasks.map((task) => task.id)).size, 105, '重试不重复追加任务');
+  assert.strictEqual(store.taskList, originalList);
+  assert.equal(store.total, originalTotal);
+  assert.equal(store.loading, false);
+  assert.equal(memory.get('taskflow_v1_data'), snapshotBeforeEmptyPage);
+  assert.equal(dataWrites, writesBeforeEmptyPage, '重试只查询，不产生业务写入');
+  console.log(
+    'PASS: 顶层任务第二页异常空页拒绝、完整缓存及汇总保留、加载锁释放，重试105条无重复且零写入'
+  );
 
   const id = store.allTasks[0].id;
   const createdAt = store.allTasks[0].createTime;
@@ -133,6 +212,11 @@ try {
   assert.equal(store.allTasks.length, 0);
   assert.equal(store.total, 0);
   assert.equal(store.loading, false);
+  assert.deepEqual(
+    store.taskSummary,
+    { total: 0, done: 0, percentage: 0 },
+    '清空后汇总应全部为零，完成率不能是NaN'
+  );
   console.log('PASS: 乱序响应保护与清空后旧请求隔离');
 } finally {
   if (request && originalAdapter) request.defaults.adapter = originalAdapter;
@@ -144,3 +228,10 @@ try {
 
 await verifyStorage();
 console.log('第二阶段存储与恢复断言通过。');
+await verifyProjectFilters();
+await verifySubtaskQueries();
+await verifySubtaskCompletion();
+await verifySubtaskEdits();
+await verifySubtaskDeletion();
+await verifyTaskRelations();
+await verifyDates();

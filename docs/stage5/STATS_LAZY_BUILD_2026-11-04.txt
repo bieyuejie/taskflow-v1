@@ -1,0 +1,34 @@
+
+> taskflow@0.0.0 build
+> vite build
+
+vite v5.4.11 building for production...
+transforming...
+✓ 2087 modules transformed.
+rendering chunks...
+[plugin:vite:reporter] [plugin vite:reporter] 
+(!) D:/Frontend/project.v1/taskflow.v1/src/stores/user.js is dynamically imported by D:/Frontend/project.v1/taskflow.v1/src/api/request.js but also statically imported by D:/Frontend/project.v1/taskflow.v1/src/App.vue, D:/Frontend/project.v1/taskflow.v1/src/router/guard.js, D:/Frontend/project.v1/taskflow.v1/src/views/Login.vue, dynamic import will not move module into another chunk.
+
+[plugin:vite:reporter] [plugin vite:reporter] 
+(!) D:/Frontend/project.v1/taskflow.v1/src/stores/task.js is dynamically imported by D:/Frontend/project.v1/taskflow.v1/src/api/request.js but also statically imported by D:/Frontend/project.v1/taskflow.v1/src/App.vue, D:/Frontend/project.v1/taskflow.v1/src/components/SubtaskList.vue, D:/Frontend/project.v1/taskflow.v1/src/stores/storage.js, D:/Frontend/project.v1/taskflow.v1/src/views/Kanban.vue, D:/Frontend/project.v1/taskflow.v1/src/views/Stats.vue, D:/Frontend/project.v1/taskflow.v1/src/views/TaskList.vue, dynamic import will not move module into another chunk.
+
+[plugin:vite:reporter] [plugin vite:reporter] 
+(!) D:/Frontend/project.v1/taskflow.v1/src/stores/project.js is dynamically imported by D:/Frontend/project.v1/taskflow.v1/src/api/request.js but also statically imported by D:/Frontend/project.v1/taskflow.v1/src/App.vue, D:/Frontend/project.v1/taskflow.v1/src/views/Kanban.vue, D:/Frontend/project.v1/taskflow.v1/src/views/Projects.vue, D:/Frontend/project.v1/taskflow.v1/src/views/Stats.vue, D:/Frontend/project.v1/taskflow.v1/src/views/TaskList.vue, dynamic import will not move module into another chunk.
+
+[plugin:vite:reporter] [plugin vite:reporter] 
+(!) D:/Frontend/project.v1/taskflow.v1/src/router/index.js is dynamically imported by D:/Frontend/project.v1/taskflow.v1/src/api/request.js but also statically imported by D:/Frontend/project.v1/taskflow.v1/src/main.js, dynamic import will not move module into another chunk.
+
+computing gzip size...
+dist/index.html                        0.51 kB │ gzip:   0.35 kB
+dist/assets/Projects-CrH8OPj3.css      0.19 kB │ gzip:   0.14 kB
+dist/assets/Stats-ySd6qmh3.css         0.42 kB │ gzip:   0.23 kB
+dist/assets/index-zNSvhEa5.css       323.83 kB │ gzip:  44.96 kB
+dist/assets/Projects-CoVGSBHC.js       4.36 kB │ gzip:   2.06 kB
+dist/assets/Stats-5XZn54kZ.js      1,034.48 kB │ gzip: 343.66 kB
+dist/assets/index-BbyqlX-6.js      1,116.75 kB │ gzip: 375.19 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 9.05s

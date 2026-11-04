@@ -1,0 +1,51 @@
+PASS: 列表选中项目A后进入看板，加载101条顶层任务，跨页无遗漏且不计子任务
+PASS: 1280px 实际下拉选择项目A/B/空项目/全部项目，数量101/2/0/103正确，状态分列正确，快照不变，无横向溢出
+PASS: 375px 实际下拉选择项目A/B/空项目/全部项目，数量101/2/0/103正确，状态分列正确，快照不变，无横向溢出
+PASS: 768px 实际下拉选择项目A/B/空项目/全部项目，数量101/2/0/103正确，状态分列正确，快照不变，无横向溢出
+PASS: 看板选择项目B后返回列表，再进入看板，两页项目一致
+PASS: 直接刷新看板后项目选项重新加载，UI筛选恢复全部，业务快照保留
+PASS: 1280px 统计A/B/空/全部为101/2/0/103条、33%/100%/0%/34%，排除子任务，状态/优先级计数一致；真实画布提示已完成2条/低优先级1条；三页项目联动、零写入、无横向溢出
+PASS: 1280px 统计查询失败隐藏旧图表与汇总，再失败保留重试；恢复后连续重试无重复查询，刷新保留快照并恢复全部项目
+PASS: 1280px 列表请求未完成时进入统计/看板，新页面仍加载当前项目，不展示其他项目旧缓存
+PASS: 1280px 列表第2/11页、搜索trim及回首页、项目/状态组合与清空、零结果、卸载防抖取消、失败隐藏旧表格及分页、连续重试防重复、刷新保留快照全部通过
+PASS: 375px 统计A/B/空/全部为101/2/0/103条、33%/100%/0%/34%，排除子任务，状态/优先级计数一致；真实画布提示已完成2条/低优先级1条；三页项目联动、零写入、无横向溢出
+PASS: 375px 统计查询失败隐藏旧图表与汇总，再失败保留重试；恢复后连续重试无重复查询，刷新保留快照并恢复全部项目
+浏览器失败时页面： TaskFlow
+项目管理
+任务列表
+任务看板
+数据统计
+退出登录
+任务列表
+
+共 0 个任务
+
+新增任务
+联动项目B
+进行中
+仅看逾期
+标题
+	
+描述
+	
+状态
+	
+优先级
+	
+截止日期
+	
+创建时间
+	
+操作
+
+暂无任务
+file:///D:/Frontend/project.v1/taskflow.v1/scripts/verifyStage4Browser.mjs:51
+  if (response.exceptionDetails) throw new Error(response.exceptionDetails.text);
+                                       ^
+
+Error: Uncaught (in promise) Error: audit restart after harness fix
+    at evaluate (file:///D:/Frontend/project.v1/taskflow.v1/scripts/verifyStage4Browser.mjs:51:40)
+    at async verifyStage4Browser (file:///D:/Frontend/project.v1/taskflow.v1/scripts/stage4BrowserCases.mjs:354:7)
+    at async file:///D:/Frontend/project.v1/taskflow.v1/scripts/verifyStage4Browser.mjs:180:3
+
+Node.js v24.19.0

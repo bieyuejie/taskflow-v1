@@ -1,7 +1,12 @@
 import request from './request';
 
-export function getTaskList(params) {
-  return request.get('/tasks', { params });
+export function getTaskList(params = {}) {
+  return request.get('/tasks', {
+    params: {
+      parentId: 'root',
+      ...params,
+    },
+  });
 }
 
 export function createTask(data) {
@@ -14,4 +19,20 @@ export function updateTask(id, data) {
 
 export function deleteTask(id) {
   return request.delete(`/tasks/${id}`);
+}
+
+export function getSubtasks(parentId, params = {}) {
+  return getTaskList({
+    ...params,
+    parentId,
+  });
+}
+
+export function createSubtask(parentId, data) {
+  return createTask({
+    ...data,
+    parentId,
+    status: 'todo',
+    dueDate: null,
+  });
 }
