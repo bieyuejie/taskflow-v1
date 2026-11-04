@@ -1,13 +1,13 @@
 # TaskFlow V1 前端完善版
 
-V1 在独立目录完善原 TaskFlow。当前工作区前五阶段已完成验收：本地快照、项目管理、一级子任务、截止日期与逾期筛选、列表/看板/统计项目联动，以及页面懒加载和图表按需。第五阶段实际结果见 [ACCEPTANCE.md](docs/stage5/ACCEPTANCE.md) 与 [性能对比](docs/stage5/PERFORMANCE.md)，第四阶段见 [ACCEPTANCE.md](docs/stage4/ACCEPTANCE.md)，第三阶段见 [ACCEPTANCE.md](docs/stage3/ACCEPTANCE.md)，第二阶段记录见 [COMPLETED.md](docs/stage2/COMPLETED.md)。第六阶段已开始整理[交付清单](docs/stage6/DELIVERY.md)，发布尚未进行；第三阶段以来的成果在本次本地提交中归档，尚未推送 GitHub。
+V1 在独立目录完善原 TaskFlow。当前工作区前五阶段已完成验收：本地快照、项目管理、一级子任务、截止日期与逾期筛选、列表/看板/统计项目联动，以及页面懒加载和图表按需。第五阶段实际结果见 [ACCEPTANCE.md](docs/stage5/ACCEPTANCE.md) 与 [性能对比](docs/stage5/PERFORMANCE.md)，第四阶段见 [ACCEPTANCE.md](docs/stage4/ACCEPTANCE.md)，第三阶段见 [ACCEPTANCE.md](docs/stage3/ACCEPTANCE.md)，第二阶段记录见 [COMPLETED.md](docs/stage2/COMPLETED.md)。第六阶段已开始整理[交付清单](docs/stage6/DELIVERY.md)，发布尚未进行；第三至第五阶段成果已推送到独立 GitHub 仓库，业务归档提交为 [c8bd241](https://github.com/bieyuejie/taskflow-v1/commit/c8bd241846afa25a0670fd12f2710f49b0d469b2)，详见[版本保存记录](docs/stage6/GITHUB_SAVE.md)。
 
 ## 工作区与来源
 
 - 源码目录：`D:/Frontend/project.v1/taskflow.v1`。
 - 只读来源：`D:/Frontend/projects/taskflow`，基线提交 `f0520603aecb13de401b144eee38632b8e4a3c13`。
 - 基线共 32 个受控文件，复制内容已核验一致，允许 CRLF/LF 差异；原 `.git`、依赖目录、构建产物、缓存、日志及未跟踪的 `vercel.json` 未导入。
-- V1 使用独立 Git 仓库和 `master` 分支，没有沿用原远程。第二阶段版本保存在 [bieyuejie/taskflow-v1](https://github.com/bieyuejie/taskflow-v1)，标签为 `stage2-complete`；2026-11-04 按用户要求将该仓库改为公开，已验证未登录可访问，见[可见性变更记录](docs/stage6/VISIBILITY_CHANGE.md)。第三至第五阶段成果仍待推送，网站尚未发布。
+- V1 使用独立 Git 仓库和 `master` 分支，没有沿用原远程。第二阶段版本保存在 [bieyuejie/taskflow-v1](https://github.com/bieyuejie/taskflow-v1)，标签为 `stage2-complete`；2026-11-04 按用户要求将该仓库改为公开，已验证未登录可访问，见[可见性变更记录](docs/stage6/VISIBILITY_CHANGE.md)。第三至第五阶段成果已保存到同一独立仓库，网站尚未发布。
 - 两份 V1 方案文档位于上级目录，开发约束见上级 `AGENTS.md`。
 
 ## 启动与检查
