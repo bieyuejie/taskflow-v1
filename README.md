@@ -79,7 +79,7 @@ npm run measure:build -- my-measurement stage5
 
 ## 独立部署规划
 
-独立源码仓库为 `bieyuejie/taskflow-v1`，Vite base 为 `/taskflow-v1/`。预期Pages地址是 `https://bieyuejie.github.io/taskflow-v1/`，目前未发布、未验证，不作为可用演示链接。
+独立源码仓库为 `bieyuejie/taskflow-v1`，Vite base 为 `/taskflow-v1/`。Pages 发布源已配置为 GitHub Actions，实际配置见[配置记录](docs/stage6/PAGES_SETUP.md)。预期Pages地址是 `https://bieyuejie.github.io/taskflow-v1/`，目前尚未运行部署、未完成线上验证，不作为可用演示链接。
 
 GitHub Actions 暂仅允许手动触发，并限制目标为上述仓库的 `master` 分支。流程为 `npm ci → npm run check → 构建 → Pages 发布`。第六阶段核对实际仓库、Pages 设置和完整验收后再开启自动发布，不覆盖原 `taskflow` 仓库和站点。
 

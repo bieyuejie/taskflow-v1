@@ -2,9 +2,11 @@
 
 核对日期：2026-11-04（Asia/Shanghai）。本次为只读预检查，尚未发布。
 
-后续状态：用户已明确选择公开仓库，现已执行并通过未登录访问验证，详见[可见性变更记录](VISIBILITY_CHANGE.md)。下文私有仓库及计划查询结果保留为变更前预检查证据，不代表当前可见性；Pages 仍未启用。
+后续状态：用户已明确选择公开仓库，现已执行并通过未登录访问验证，详见[可见性变更记录](VISIBILITY_CHANGE.md)。下文私有仓库及计划查询结果保留为变更前预检查证据，不代表当前可见性。
 
 归档状态更新：第三至第五阶段成果现已通过提交 `c8bd241` 推送至独立仓库，详见[版本保存记录](GITHUB_SAVE.md)。下文第二阶段远程 SHA 为当时预检查结果，保留为历史证据。
+
+Pages 状态更新：现已配置发布源为 GitHub Actions，实际 `has_pages=true`、`build_type=workflow`，工作流运行次数为0，尚未部署，详见[配置记录](PAGES_SETUP.md)。下文未启用状态为配置前的历史证据。
 
 ## 本轮补充核实
 
@@ -32,7 +34,7 @@
 
 ## 发布前仍需核实
 
-- Pages 启用后的发布源是否为 GitHub Actions、部署环境是否有额外规则。当前已确认尚未启用，不将本地 YAML 当作线上配置已完成的证据。
+- Pages 发布源已通过接口确认是 GitHub Actions；部署环境是否有额外规则仍待核实。发布源配置成功不代表工作流已运行或站点可用。
 - Pages 使用条件已通过用户选择公开仓库解决，无需继续读取账号计划。GitHub 官方说明 Free 支持公开仓库 Pages；选择公开不代表站点已经启用或部署。依据：[GitHub Pages 官方说明](https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages)。
 - 远程标签仍待核实。先前 `git ls-remote` 遇到 DNS 错误及连接重置，本轮改用只读 REST 请求已成功确认远程 master 提交；后续保存成果前仍须检查是否有新的远程变更，本地 tracking ref 不单独作为远程最新版本证据。
 - 各固定 GitHub Action 提交的远程可解析性及工作流实际运行结果；本次仅核对本地配置结构，没有通过远程运行验证。
