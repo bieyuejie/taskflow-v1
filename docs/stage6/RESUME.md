@@ -1,6 +1,6 @@
 # TaskFlow V1 简历素材
 
-状态：本地验收、独立 Pages 部署及线上业务验收已通过，最终 `v1.0.0` 标签待创建。以下表述已有实际依据。
+状态：本地验收、独立 Pages 部署、线上业务验收及最终 `v1.0.0` 归档已完成，见[最终交付验收](ACCEPTANCE.md)。以下表述已有实际依据。
 
 演示：[TaskFlow V1](https://bieyuejie.github.io/taskflow-v1/)；源码：[bieyuejie/taskflow-v1](https://github.com/bieyuejie/taskflow-v1)。
 

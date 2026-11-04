@@ -6,7 +6,7 @@
 
 归档状态更新：第三至第五阶段成果现已通过提交 `c8bd241` 推送至独立仓库，详见[版本保存记录](GITHUB_SAVE.md)。下文第二阶段远程 SHA 为当时预检查结果，保留为历史证据。
 
-Pages 状态更新：现已配置发布源为 GitHub Actions，完成首次部署、基础资源检查及[完整线上验收](ONLINE_ACCEPTANCE.md)，详见[配置记录](PAGES_SETUP.md)与[部署记录](DEPLOYMENT.md)。下文未启用状态为配置前的历史证据，最终版本标签仍待创建。
+Pages 状态更新：现已配置发布源为 GitHub Actions，完成首次部署、基础资源检查及[完整线上验收](ONLINE_ACCEPTANCE.md)，详见[配置记录](PAGES_SETUP.md)与[部署记录](DEPLOYMENT.md)。下文未启用状态为配置前的历史证据；最终 `v1.0.0` 归档见[最终交付验收](ACCEPTANCE.md)。
 
 ## 本轮补充核实
 
@@ -36,8 +36,8 @@ Pages 状态更新：现已配置发布源为 GitHub Actions，完成首次部�
 
 - Pages 发布源、环境分支规则及实际首次发布运行已验证；工作流成功，17个静态文件基础检查及完整线上浏览器业务验收均通过。
 - Pages 使用条件已通过用户选择公开仓库解决，无需继续读取账号计划。GitHub 官方说明 Free 支持公开仓库 Pages；选择公开不代表站点已经启用或部署。依据：[GitHub Pages 官方说明](https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages)。
-- 远程标签仍待核实。先前 `git ls-remote` 遇到 DNS 错误及连接重置，本轮改用只读 REST 请求已成功确认远程 master 提交；后续保存成果前仍须检查是否有新的远程变更，本地 tracking ref 不单独作为远程最新版本证据。
+- 远程版本标签已在后续最终归档步骤核实，见[最终交付验收](ACCEPTANCE.md)。先前 Git 网络错误保留为历史记录；本地 tracking ref 不单独作为远程最新版本证据，使用实际远程引用核对。
 - 各固定 GitHub Action 提交及清单的远程可解析性已在后续核对通过，复合上传依赖也可读取，首次工作流运行结果为 success。
-- 第三至第五阶段成果已归档，Pages 首次部署及线上完整验收均通过；下一步骤标记并核实 `v1.0.0`，之后再完成第六阶段最终归档。
+- 第三至第五阶段成果、Pages 首次部署、线上完整验收及后续 `v1.0.0` 最终归档均已完成，见[最终交付验收](ACCEPTANCE.md)。
 
 本阶段预检查仅整理核对文档、交付清单和变更记录。使用现有 Prettier 检查本次修改的 Markdown 文件；业务代码未改动，不重复业务测试。

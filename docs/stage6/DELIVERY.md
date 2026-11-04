@@ -1,5 +1,7 @@
 # 第六阶段交付清单
 
+状态：六阶段验收和 `v1.0.0` 归档完成，见[最终交付验收](ACCEPTANCE.md)。
+
 - [x] 前五阶段本地验收通过
 - [x] 核对独立仓库身份与本地发布配置（见 [核对记录](RELEASE_PRECHECK.md)）
 - [x] 按用户选择将独立仓库改为公开，并验证未登录可访问（见 [变更记录](VISIBILITY_CHANGE.md)）
@@ -9,4 +11,4 @@
 - [x] 核对固定 GitHub Action 提交及发布环境规则（见 [核对记录](WORKFLOW_PRECHECK.md)）
 - [x] 发布独立 GitHub Pages（工作流及17个静态文件基础检查通过，见 [部署记录](DEPLOYMENT.md)）
 - [x] 验证线上登录、业务操作、刷新和资源加载（含三宽度与异常，见 [线上验收](ONLINE_ACCEPTANCE.md)）
-- [ ] 线上验收通过后标记 v1.0.0
+- [x] 线上验收通过后标记 v1.0.0（附注标签，见 [固定版本](https://github.com/bieyuejie/taskflow-v1/tree/v1.0.0)）
