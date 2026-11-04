@@ -19,4 +19,4 @@
 - 仅向目标仓库 Pages 接口提交 `{ "build_type": "workflow" }` 创建配置，随后重新读取确认 `has_pages=true`、`build_type=workflow`、`public=true`、`cname=null`。
 - GitHub 返回预期地址 `https://bieyuejie.github.io/taskflow-v1/`，站点 `status=null`；查询工作流运行记录为0次。因此结论为发布入口配置成功，尚未执行构建、部署或线上验收，不将返回的地址当作可用演示链接。
 - README、交付清单、预检查记录及变更记录同步实际状态，使用现有 Prettier 和空白检查；文档作为独立提交保存至同一仓库，现有工作流仍只允许手动触发。
-- 下一步先核对固定 GitHub Action 提交及部署环境，再手动运行发布工作流，完成后进行线上验收。本步没有触发工作流，也没有修改业务代码或其他仓库。
+- 后续已完成固定 GitHub Action 提交及部署环境核对，见[核对记录](WORKFLOW_PRECHECK.md)。下一步手动运行发布工作流，完成后进行线上验收。本次入口配置及后续预检查均未触发工作流，也没有修改业务代码或其他仓库。

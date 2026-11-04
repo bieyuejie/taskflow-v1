@@ -1,5 +1,14 @@
 # 第六阶段变更记录
 
+## 2026-11-04：核对固定 Action 及发布环境
+
+- 原因与范围：用户继续“核对发布流程依赖和环境设置”步骤，本轮只读检查，为后续手动部署准备证据。
+- 实际结果：5个固定官方 Action 提交及 action.yml 均可读取，复合上传 Action 引用的 upload-artifact 固定提交亦可读取。保留所有 SHA，不升级版本；setup-node 浮动主版本标签两次查询结果不同，已如实记录，不将最新标签作为固定提交有效性的判断条件。
+- 环境结果：Actions 启用且允许全部 Action，发布工作流 active，github-pages 环境仅有 master 分支规则，无 required_reviewers 或 wait_timer 规则，Pages 仍为 workflow，运行次数0。按实际规则类型重查，避免将 PowerShell 空值数组计数误解释为审批人数。
+- 影响文件：新增 `WORKFLOW_PRECHECK.md`；更新 `DELIVERY.md`、`PAGES_SETUP.md`、`RELEASE_PRECHECK.md` 和本记录。业务代码、依赖、工作流、环境和仓库权限均未修改。
+- 验证：读取实际远程 Action 和环境配置；本次文档使用现有 Prettier、空白检查，并作为独立文档提交推送后核对远程 SHA。不重复业务测试。
+- 未完成项：实际手动部署、线上业务及资源验收、交付文档最终更新和 v1.0.0 标签。本轮未触发部署，未访问 secrets，也未操作旧仓库或旧站点。
+
 ## 2026-11-04：配置独立 Pages 发布入口为 GitHub Actions
 
 - 原因与范围：用户继续第六阶段“配置 Pages”步骤；本步只配置发布入口，实际部署留到后续步骤。先在 `PAGES_SETUP.md` 记录方案、唯一目标及影响。
